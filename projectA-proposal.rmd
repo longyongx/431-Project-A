@@ -175,7 +175,7 @@ saveRDS(chr_2020, file = "chr_2020_Patrick_Wu_Long_Vu.Rds")
 
 ## Final Proposal Requirement
 
-The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median.
+The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median. In the end, we also combined the missing values category with one of the others to maintain the binary nature of the variable.
 
 # Session Information
 
