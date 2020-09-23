@@ -75,8 +75,8 @@ chr_2020 <- chr_2020 %>%
 
 ```{r, message = FALSE}
 chr_2020 <- chr_2020 %>%
-    mutate(food_binary = case_when(is.na(food_environment_index) ~ "N/A",
-                   food_environment_index < median(food_environment_index, na.rm = TRUE) ~ "low",
+    mutate(food_binary = case_when(is.na(food_environment_index) ~ "other",
+                   food_environment_index < median(food_environment_index, na.rm = TRUE) ~ "other",
                    TRUE ~ "high"),
            food_binary = factor(food_binary))
 mosaic::favstats(food_environment_index ~ food_binary, data = chr_2020) %>% 
@@ -118,7 +118,7 @@ uninsured_adults | (v003) Percentage of uninsured Adults
 some_college | (v069) Percentage of Adults 25-44 with post-secondary education
 median_household_income | (v063) Median Household Income
 food_environment_index | (v133) Food Environment Index
-food_binary | 2 levels: low = food_environment_index below median, or high
+food_binary | 2 levels: other = food_environment_index below median or missing value, high = above median
 income_cat | 4 levels: lower = median_household_income below 45k, lower_middle = between 45-55k, upper_middle = between 55-65k, upper above 65k
 
 ### Proposal Requirements 1 and 2
