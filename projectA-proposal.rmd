@@ -59,7 +59,7 @@ chr_2020_counties <- chr_2020 %>%
 chr_2020_counties
 ```
 
-We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "rust belt" region.
+We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "Rust Belt" region.
 
 ## Repairing the `fipscode` and factoring the `state`
 
@@ -112,30 +112,40 @@ Variable | Description
 --------- | ------------------------------------------------
 fipscode | FIPS code
 state | State: our four states are IN, MI, OH, and PA
-county | County Name
+county | County name
 life_expectancy | (v147) Life expectancy
-uninsured_adults | (v003) Percentage of uninsured Adults
-some_college | (v069) Percentage of Adults 25-44 with post-secondary education
-median_household_income | (v063) Median Household Income
-food_environment_index | (v133) Food Environment Index
+uninsured_adults | (v003) Uninsured adults
+some_college | (v069) Some college
+median_household_income | (v063) Median household income
+food_environment_index | (v133) Food environment index
 food_binary | 2 levels: other = food_environment_index below median or missing value, high = above median
 income_cat | 4 levels: lower = median_household_income below 45k, lower_middle = between 45-55k, upper_middle = between 55-65k, upper above 65k
 
+- The outcome variable is `life_expectancy`, which was originally variable `v147_rawvalue`, and listed in the Length of Life subcategory of Health Outcomes at the County Health Rankings. It describes the average number of years a person can expect to live, based on age-specific death rates. This measure is age-adjusted and sourced from the 2016-2018 National Center for Health Statistic Mortality Files.
+
+- The first quantitative predictor is `uninsured_adults`, which  was originally variable `v003_rawvalue`, and listed in the Access to Care subcategory of Clinical Care at the County Health Rankings. It describes the percentage of people under 54 without health insurance coverage. This measure is created from statistical modeling, using data from the US Census Bureau’s 2017 Small Area Health Insurance Estimates program.
+
+- The second quantitative predictor is `some_college`, which was originally variable `v069_rawvalue`, and listed in the Education subcategory of Social & Economic Factors at the County Health Rankings. It describes the percentage of adults ages 25-44 with some post-secondary education. This includes, but is not limited to, vocational schools, junior colleges, and four-year colleges. This measure counts those who pursued post-secondary education, but did not receive a degree in addition to those who attained degrees. Data is sourced from the 2014-2018 American Community Survey’s 5-year estimates.
+
+- The multi-categorical predictor is `median_household_income`, which was originally variable `v063_rawvalue`, and listed in the Income subcategory of Social & Economic Factors at the County Health Rankings. It describes the income where half of the households in a county earn more and the other half earn less. This measure is created from statistical modeling, using data from the 2018 Small Area Income and Poverty Estimates program.
+
+- The binary predictor is `food_environment_index`, which was originally variable `v133_rawvalue`, and listed in the Diet and Exercise subcategory under Health Behaviors at the County Health Rankings. This measure is a scaled index that equally weighs two food environment indicators, limited access to healthy foods and food insecurity, on a scale from 0 (worst) to 10 (best). Limited access to healthy foods examines the percentage of low-income households less than 10 miles from a grocery store. Food insecurity estimates the percentage of low-income households which did not have a reliable source of food. Data is sourced from the 2015 & 2017 USDA Food Environment Atlas.
+
 ### Proposal Requirements 1 and 2
 
-We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "rust belt."
+We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "Rust Belt" region.
 
-The variables chosen are as follows:
+The variables chosen and their reasoning why are as follows:
 
-- The outcome variable is `life_expectancy`, which was originally variable `v147_rawvalue`, and listed in the Length of Life subcategory of Health Outcomes at the County Health Rankings. It describes the average number of years a person can expect to live, based on age-specific death rates. This measure is age-adjusted and sourced from the 2016-2018 National Center for Health Statistic Mortality Files. Life expectancy was chosen as our outcome variable due to its ease for interpretation, in comparison to other measures of mortality.
+- Life expectancy was chosen as our outcome variable due to its ease for interpretation, in comparison to other measures of mortality.
 
-- The first quantitative predictor is `uninsured_adults`, which  was originally variable `v003_rawvalue`, and listed in the Access to Care subcategory of Clinical Care at the County Health Rankings. It describes the percentage of people under 54 without health insurance coverage. This measure is created from statistical modeling, using data from the US Census Bureau’s 2017 Small Area Health Insurance Estimates program. This variable is of interest because health insurance coverage is a large barrier to providing health care access in many communities.
+- Percentage of uninsured adults is of interest because health insurance coverage is a large barrier to providing health care access in many communities.
 
-- The second quantitative predictor is `some_college`, which was originally variable `v069_rawvalue`, and listed in the Education subcategory of Social & Economic Factors at the County Health Rankings. It describes the percentage of adults ages 25-44 with some post-secondary education. This includes, but is not limited to, vocational schools, junior colleges, and four-year colleges. This measure counts those who pursued post-secondary education, but did not receive a degree in addition to those who attained degrees. Data is sourced from the 2014-2018 American Community Survey’s 5-year estimates. We chose this variable because higher education is typically thought to lead to better paying jobs, which provide better health insurance and quality health care.
+- Higher education is typically thought to lead to better paying jobs, which provide better health insurance and quality health care.
 
-- The multi-categorical predictor is `median_household_income`, which was originally variable `v063_rawvalue`, and listed in the Income subcategory of Social & Economic Factors at the County Health Rankings. It describes the income where half of the households in a county earn more and the other half earn less. This measure is created from statistical modeling, using data from the 2018 Small Area Income and Poverty Estimates program. We chose this variable because median household income is a strong indicator of income inequality between counties, which is directly linked to differences in health care outcomes.
+- Median household income is a strong indicator of income inequality between counties, which is directly linked to differences in health care outcomes.
 
-- The binary predictor is `food_environment_index`, which was originally variable `v133_rawvalue`, and listed in the Diet and Exercise subcategory under Health Behaviors at the County Health Rankings. This measure is a scaled index that equally weighs two food environment indicators, limited access to healthy foods and food insecurity, on a scale from 0 (worst) to 10 (best). Limited access to healthy foods examines the percentage of low-income households less than 10 miles from a grocery store. Food insecurity estimates the percentage of low-income households which did not have a reliable source of food. Data is sourced from the 2015 & 2017 USDA Food Environment Atlas. This variable was chosen because food environment is important to maintaining a healthy lifestyle, and there is strong evidence food deserts plays a role in health outcomes.
+- Food environment is important to maintaining a healthy lifestyle, and there is strong evidence food deserts plays a role in health outcomes.
 
 
 ## Summarizing the tibble
