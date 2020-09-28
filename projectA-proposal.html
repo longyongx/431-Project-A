@@ -10,7 +10,7 @@
 
 <meta name="author" content="Patrick Wu, Long Vu" />
 
-<meta name="date" content="2020-09-23" />
+<meta name="date" content="2020-09-27" />
 
 <title>Impact of Health Factors on Life Expectancy in Rust Belt States</title>
 
@@ -1602,7 +1602,8 @@ $(document).ready(function () {
     <div id="table-of-contents">
       <ul>
       <li><a href="#setup-and-r-packages"><span class="toc-section-number">1</span> Setup and R Packages</a><ul>
-      <li><a href="#data-ingest"><span class="toc-section-number">1.1</span> Data Ingest</a></li>
+      <li><a href="#r-packages"><span class="toc-section-number">1.1</span> R Packages</a></li>
+      <li><a href="#data-ingest"><span class="toc-section-number">1.2</span> Data Ingest</a></li>
       </ul></li>
       <li><a href="#data-development"><span class="toc-section-number">2</span> Data Development</a><ul>
       <li><a href="#selecting-my-data"><span class="toc-section-number">2.1</span> Selecting My Data</a></li>
@@ -1610,30 +1611,37 @@ $(document).ready(function () {
       <li><a href="#creating-binary-categorical-variable"><span class="toc-section-number">2.3</span> Creating Binary Categorical Variable</a></li>
       <li><a href="#creating-multi-category-variable"><span class="toc-section-number">2.4</span> Creating Multi-Category Variable</a></li>
       <li><a href="#structure-of-my-tibble"><span class="toc-section-number">2.5</span> Structure of My Tibble</a></li>
-      <li><a href="#codebook"><span class="toc-section-number">2.6</span> Codebook</a></li>
-      <li><a href="#summarizing-the-tibble"><span class="toc-section-number">2.7</span> Summarizing the tibble</a></li>
-      <li><a href="#checking-the-data"><span class="toc-section-number">2.8</span> Checking the Data</a></li>
-      <li><a href="#saving-the-tibble"><span class="toc-section-number">2.9</span> Saving the Tibble</a></li>
-      <li><a href="#final-proposal-requirement"><span class="toc-section-number">2.10</span> Final Proposal Requirement</a></li>
       </ul></li>
-      <li><a href="#session-information"><span class="toc-section-number">3</span> Session Information</a></li>
+      <li><a href="#codebook"><span class="toc-section-number">3</span> Codebook</a><ul>
+      <li><a href="#proposal-requirement-1"><span class="toc-section-number">3.1</span> Proposal Requirement 1</a></li>
+      <li><a href="#proposal-requirement-2"><span class="toc-section-number">3.2</span> Proposal Requirement 2</a></li>
+      <li><a href="#proposal-requirement-3"><span class="toc-section-number">3.3</span> Proposal Requirement 3</a></li>
+      <li><a href="#proposal-requirement-4"><span class="toc-section-number">3.4</span> Proposal Requirement 4</a></li>
+      <li><a href="#three-important-checks"><span class="toc-section-number">3.5</span> Three Important Checks</a></li>
+      <li><a href="#saving-the-tibble"><span class="toc-section-number">3.6</span> Saving the Tibble</a></li>
+      <li><a href="#proposal-requirement-5"><span class="toc-section-number">3.7</span> Proposal Requirement 5</a></li>
+      </ul></li>
+      <li><a href="#session-information"><span class="toc-section-number">4</span> Session Information</a></li>
       </ul>
     </div>
     
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
               <p class="author"><span class="glyphicon glyphicon-user"></span> Patrick Wu, Long Vu</p>
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2020-09-23</p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2020-09-27</p>
         </div>
 </div>
 
 <div id="main">
 <div id="setup-and-r-packages" class="section level1">
 <h1><span class="header-section-number">1</span> Setup and R Packages</h1>
+<div id="r-packages" class="section level2">
+<h2><span class="header-section-number">1.1</span> R Packages</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(janitor)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(magrittr)</span>
 <span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(tidyverse)</span></code></pre></div>
+</div>
 <div id="data-ingest" class="section level2">
-<h2><span class="header-section-number">1.1</span> Data Ingest</h2>
+<h2><span class="header-section-number">1.2</span> Data Ingest</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>chr_<span class="dv">2020</span>_raw &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;chr_2020_raw.csv&quot;</span>, <span class="dt">guess_max =</span> <span class="dv">3200</span>)</span></code></pre></div>
 </div>
 </div>
@@ -1652,40 +1660,56 @@ $(document).ready(function () {
 <span id="cb3-9"><a href="#cb3-9"></a>           <span class="dt">some_college =</span> v069_rawvalue,</span>
 <span id="cb3-10"><a href="#cb3-10"></a>           <span class="dt">median_household_income =</span> v063_rawvalue,</span>
 <span id="cb3-11"><a href="#cb3-11"></a>           <span class="dt">food_environment_index =</span> v133_rawvalue)</span></code></pre></div>
-<div id="proposal-requirements-1-and-2" class="section level3">
-<h3><span class="header-section-number">2.1.1</span> Proposal Requirements 1 and 2</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>chr_<span class="dv">2020</span>_counties &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span><span class="kw">group_by</span>(state) <span class="op">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="st">  </span><span class="kw">summarize</span>(<span class="dt">number_of_counties =</span> <span class="kw">n</span>())</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="st">    </span><span class="kw">group_by</span>(state) <span class="op">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="dt">number_of_counties =</span> <span class="kw">n</span>())</span></code></pre></div>
 <pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>chr_<span class="dv">2020</span>_counties</span></code></pre></div>
-<pre><code># A tibble: 4 x 2
-  state number_of_counties
-  &lt;chr&gt;              &lt;int&gt;
-1 IN                    92
-2 MI                    83
-3 OH                    88
-4 PA                    67</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>chr_<span class="dv">2020</span>_counties <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">state</th>
+<th align="right">number_of_counties</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">IN</td>
+<td align="right">92</td>
+</tr>
+<tr class="even">
+<td align="left">MI</td>
+<td align="right">83</td>
+</tr>
+<tr class="odd">
+<td align="left">OH</td>
+<td align="right">88</td>
+</tr>
+<tr class="even">
+<td align="left">PA</td>
+<td align="right">67</td>
+</tr>
+</tbody>
+</table>
 <p>We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the “Rust Belt” region.</p>
-</div>
 </div>
 <div id="repairing-the-fipscode-and-factoring-the-state" class="section level2">
 <h2><span class="header-section-number">2.2</span> Repairing the <code>fipscode</code> and factoring the <code>state</code></h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fipscode =</span> <span class="kw">str_pad</span>(fipscode, <span class="dv">5</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>),</span>
-<span id="cb8-3"><a href="#cb8-3"></a>           <span class="dt">state =</span> <span class="kw">factor</span>(state))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fipscode =</span> <span class="kw">str_pad</span>(fipscode, <span class="dv">5</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>),</span>
+<span id="cb7-3"><a href="#cb7-3"></a>           <span class="dt">state =</span> <span class="kw">factor</span>(state))</span></code></pre></div>
 </div>
 <div id="creating-binary-categorical-variable" class="section level2">
 <h2><span class="header-section-number">2.3</span> Creating Binary Categorical Variable</h2>
 <div id="splitting-into-two-categories-based-on-the-median" class="section level3">
 <h3><span class="header-section-number">2.3.1</span> Splitting into two categories based on the median</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">food_binary =</span> <span class="kw">case_when</span>(<span class="kw">is.na</span>(food_environment_index) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
-<span id="cb9-3"><a href="#cb9-3"></a>                   food_environment_index <span class="op">&lt;</span><span class="st"> </span><span class="kw">median</span>(food_environment_index, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4"></a>                   <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;high&quot;</span>),</span>
-<span id="cb9-5"><a href="#cb9-5"></a>           <span class="dt">food_binary =</span> <span class="kw">factor</span>(food_binary))</span>
-<span id="cb9-6"><a href="#cb9-6"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>food_binary, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">food_binary =</span> <span class="kw">case_when</span>(<span class="kw">is.na</span>(food_environment_index) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3"></a>                   food_environment_index <span class="op">&lt;</span><span class="st"> </span><span class="kw">median</span>(food_environment_index, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4"></a>                   <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;high&quot;</span>),</span>
+<span id="cb8-5"><a href="#cb8-5"></a>           <span class="dt">food_binary =</span> <span class="kw">factor</span>(food_binary))</span>
+<span id="cb8-6"><a href="#cb8-6"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>food_binary, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1734,16 +1758,16 @@ $(document).ready(function () {
 <h2><span class="header-section-number">2.4</span> Creating Multi-Category Variable</h2>
 <div id="creating-a-4-category-variable-with-specified-cutpoints" class="section level3">
 <h3><span class="header-section-number">2.4.1</span> Creating a 4-Category variable with Specified Cutpoints</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">income_cat =</span> <span class="kw">case_when</span>(</span>
-<span id="cb10-3"><a href="#cb10-3"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">45000</span> <span class="op">~</span><span class="st"> &quot;1_lower&quot;</span>,</span>
-<span id="cb10-4"><a href="#cb10-4"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">55000</span> <span class="op">~</span><span class="st"> &quot;2_lower_middle&quot;</span>,</span>
-<span id="cb10-5"><a href="#cb10-5"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">65000</span> <span class="op">~</span><span class="st"> &quot;3_upper_middle&quot;</span>,</span>
-<span id="cb10-6"><a href="#cb10-6"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;4_upper&quot;</span>),</span>
-<span id="cb10-7"><a href="#cb10-7"></a>        <span class="dt">income_cat =</span> <span class="kw">factor</span>(income_cat))</span>
-<span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(median_household_income <span class="op">~</span><span class="st"> </span>income_cat, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">income_cat =</span> <span class="kw">case_when</span>(</span>
+<span id="cb9-3"><a href="#cb9-3"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">45000</span> <span class="op">~</span><span class="st"> &quot;1_lower&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">55000</span> <span class="op">~</span><span class="st"> &quot;2_lower_middle&quot;</span>,</span>
+<span id="cb9-5"><a href="#cb9-5"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">65000</span> <span class="op">~</span><span class="st"> &quot;3_upper_middle&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;4_upper&quot;</span>),</span>
+<span id="cb9-7"><a href="#cb9-7"></a>        <span class="dt">income_cat =</span> <span class="kw">factor</span>(income_cat))</span>
+<span id="cb9-8"><a href="#cb9-8"></a></span>
+<span id="cb9-9"><a href="#cb9-9"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(median_household_income <span class="op">~</span><span class="st"> </span>income_cat, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1814,7 +1838,7 @@ $(document).ready(function () {
 </div>
 <div id="structure-of-my-tibble" class="section level2">
 <h2><span class="header-section-number">2.5</span> Structure of My Tibble</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">str</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">str</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
 <pre><code>tibble [330 x 10] (S3: tbl_df/tbl/data.frame)
  $ fipscode               : chr [1:330] &quot;18001&quot; &quot;18003&quot; &quot;18005&quot; &quot;18007&quot; ...
  $ state                  : Factor w/ 4 levels &quot;IN&quot;,&quot;MI&quot;,&quot;OH&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
@@ -1827,8 +1851,9 @@ $(document).ready(function () {
  $ food_binary            : Factor w/ 2 levels &quot;high&quot;,&quot;other&quot;: 1 2 2 1 1 1 1 1 1 2 ...
  $ income_cat             : Factor w/ 4 levels &quot;1_lower&quot;,&quot;2_lower_middle&quot;,..: 3 2 3 2 2 4 3 3 2 3 ...</code></pre>
 </div>
-<div id="codebook" class="section level2">
-<h2><span class="header-section-number">2.6</span> Codebook</h2>
+</div>
+<div id="codebook" class="section level1">
+<h1><span class="header-section-number">3</span> Codebook</h1>
 <table>
 <colgroup>
 <col width="15%"></col>
@@ -1890,9 +1915,12 @@ $(document).ready(function () {
 <li><p>The multi-categorical predictor is <code>median_household_income</code>, which was originally variable <code>v063_rawvalue</code>, and listed in the Income subcategory of Social &amp; Economic Factors at the County Health Rankings. It describes the income where half of the households in a county earn more and the other half earn less. This measure is created from statistical modeling, using data from the 2018 Small Area Income and Poverty Estimates program.</p></li>
 <li><p>The binary predictor is <code>food_environment_index</code>, which was originally variable <code>v133_rawvalue</code>, and listed in the Diet and Exercise subcategory under Health Behaviors at the County Health Rankings. This measure is a scaled index that equally weighs two food environment indicators, limited access to healthy foods and food insecurity, on a scale from 0 (worst) to 10 (best). Limited access to healthy foods examines the percentage of low-income households less than 10 miles from a grocery store. Food insecurity estimates the percentage of low-income households which did not have a reliable source of food. Data is sourced from the 2015 &amp; 2017 USDA Food Environment Atlas.</p></li>
 </ul>
-<div id="proposal-requirements-1-and-2-1" class="section level3">
-<h3><span class="header-section-number">2.6.1</span> Proposal Requirements 1 and 2</h3>
+<div id="proposal-requirement-1" class="section level2">
+<h2><span class="header-section-number">3.1</span> Proposal Requirement 1</h2>
 <p>We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the “Rust Belt” region.</p>
+</div>
+<div id="proposal-requirement-2" class="section level2">
+<h2><span class="header-section-number">3.2</span> Proposal Requirement 2</h2>
 <p>The variables chosen and their reasoning why are as follows:</p>
 <ul>
 <li><p>Life expectancy was chosen as our outcome variable due to its ease for interpretation, in comparison to other measures of mortality.</p></li>
@@ -1902,10 +1930,9 @@ $(document).ready(function () {
 <li><p>Food environment is important to maintaining a healthy lifestyle, and there is strong evidence food deserts plays a role in health outcomes.</p></li>
 </ul>
 </div>
-</div>
-<div id="summarizing-the-tibble" class="section level2">
-<h2><span class="header-section-number">2.7</span> Summarizing the tibble</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>chr_<span class="dv">2020</span></span></code></pre></div>
+<div id="proposal-requirement-3" class="section level2">
+<h2><span class="header-section-number">3.3</span> Proposal Requirement 3</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>chr_<span class="dv">2020</span></span></code></pre></div>
 <pre><code># A tibble: 330 x 10
    fipscode state county life_expectancy uninsured_adults some_college
    &lt;chr&gt;    &lt;fct&gt; &lt;chr&gt;            &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
@@ -1921,7 +1948,10 @@ $(document).ready(function () {
 10 18019    IN    Clark~            74.9           0.0989        0.638
 # ... with 320 more rows, and 4 more variables: median_household_income &lt;dbl&gt;,
 #   food_environment_index &lt;dbl&gt;, food_binary &lt;fct&gt;, income_cat &lt;fct&gt;</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>Hmisc<span class="op">::</span><span class="kw">describe</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
+</div>
+<div id="proposal-requirement-4" class="section level2">
+<h2><span class="header-section-number">3.4</span> Proposal Requirement 4</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>Hmisc<span class="op">::</span><span class="kw">describe</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
 <pre><code>chr_2020 
 
  10  Variables      330  Observations
@@ -2007,18 +2037,42 @@ Frequency              39            161             90             40
 Proportion          0.118          0.488          0.273          0.121
 --------------------------------------------------------------------------------</code></pre>
 </div>
-<div id="checking-the-data" class="section level2">
-<h2><span class="header-section-number">2.8</span> Checking the Data</h2>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">sum</span>(<span class="kw">is.na</span>(.)))</span></code></pre></div>
-<pre><code># A tibble: 1 x 1
-  `sum(is.na(.))`
-            &lt;int&gt;
-1               3</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>state, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">    </span><span class="kw">select</span>(state, n, missing) <span class="op">%&gt;%</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">pct_available =</span> <span class="dv">100</span><span class="op">*</span>(n <span class="op">-</span><span class="st"> </span>missing)<span class="op">/</span>n) <span class="op">%&gt;%</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<div id="three-important-checks" class="section level2">
+<h2><span class="header-section-number">3.5</span> Three Important Checks</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">sum</span>(<span class="kw">is.na</span>(.)))) <span class="op">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="17%"></col>
+<col width="18%"></col>
+<col width="13%"></col>
+<col width="25%"></col>
+<col width="24%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">life_expectancy</th>
+<th align="right">uninsured_adults</th>
+<th align="right">some_college</th>
+<th align="right">median_household_income</th>
+<th align="right">food_environment_index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>state, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">    </span><span class="kw">select</span>(state, n, missing) <span class="op">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">pct_available =</span> <span class="dv">100</span><span class="op">*</span>(n <span class="op">-</span><span class="st"> </span>missing)<span class="op">/</span>n) <span class="op">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -2055,29 +2109,103 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(food_binary)</span></code></pre></div>
-<pre><code> food_binary   n   percent
-        high 169 0.5121212
-       other 161 0.4878788</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(income_cat)</span></code></pre></div>
-<pre><code>     income_cat   n   percent
-        1_lower  39 0.1181818
- 2_lower_middle 161 0.4878788
- 3_upper_middle  90 0.2727273
-        4_upper  40 0.1212121</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">n_distinct</span>(.))) <span class="op">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="17%"></col>
+<col width="18%"></col>
+<col width="13%"></col>
+<col width="25%"></col>
+<col width="24%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">life_expectancy</th>
+<th align="right">uninsured_adults</th>
+<th align="right">some_college</th>
+<th align="right">median_household_income</th>
+<th align="right">food_environment_index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">330</td>
+<td align="right">330</td>
+<td align="right">330</td>
+<td align="right">327</td>
+<td align="right">30</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(food_binary) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">food_binary</th>
+<th align="right">n</th>
+<th align="right">percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">high</td>
+<td align="right">169</td>
+<td align="right">0.5121212</td>
+</tr>
+<tr class="even">
+<td align="left">other</td>
+<td align="right">161</td>
+<td align="right">0.4878788</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(income_cat) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">income_cat</th>
+<th align="right">n</th>
+<th align="right">percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1_lower</td>
+<td align="right">39</td>
+<td align="right">0.1181818</td>
+</tr>
+<tr class="even">
+<td align="left">2_lower_middle</td>
+<td align="right">161</td>
+<td align="right">0.4878788</td>
+</tr>
+<tr class="odd">
+<td align="left">3_upper_middle</td>
+<td align="right">90</td>
+<td align="right">0.2727273</td>
+</tr>
+<tr class="even">
+<td align="left">4_upper</td>
+<td align="right">40</td>
+<td align="right">0.1212121</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="saving-the-tibble" class="section level2">
-<h2><span class="header-section-number">2.9</span> Saving the Tibble</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">saveRDS</span>(chr_<span class="dv">2020</span>, <span class="dt">file =</span> <span class="st">&quot;chr_2020_Patrick_Wu_Long_Vu.Rds&quot;</span>)</span></code></pre></div>
+<h2><span class="header-section-number">3.6</span> Saving the Tibble</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">saveRDS</span>(chr_<span class="dv">2020</span>, <span class="dt">file =</span> <span class="st">&quot;chr_2020_Patrick_Wu_Long_Vu.Rds&quot;</span>)</span></code></pre></div>
 </div>
-<div id="final-proposal-requirement" class="section level2">
-<h2><span class="header-section-number">2.10</span> Final Proposal Requirement</h2>
+<div id="proposal-requirement-5" class="section level2">
+<h2><span class="header-section-number">3.7</span> Proposal Requirement 5</h2>
 <p>The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median. In the end, we also combined the missing values category with one of the others to maintain the binary nature of the variable.</p>
 </div>
 </div>
 <div id="session-information" class="section level1">
-<h1><span class="header-section-number">3</span> Session Information</h1>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<h1><span class="header-section-number">4</span> Session Information</h1>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.0.2 (2020-06-22)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 18363)

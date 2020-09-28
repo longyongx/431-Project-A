@@ -10,6 +10,8 @@ output:
 
 # Setup and R Packages
 
+## R Packages
+
 ```{r setup, echo=FALSE, cache=FALSE}
 library(knitr)
 library(rmdformats)
@@ -50,13 +52,12 @@ chr_2020 <- chr_2020_raw %>%
            food_environment_index = v133_rawvalue)
 ```
 
-### Proposal Requirements 1 and 2
-
 ```{r}
 chr_2020_counties <- chr_2020 %>%
-  group_by(state) %>%
-  summarize(number_of_counties = n())
-chr_2020_counties
+    group_by(state) %>%
+    summarize(number_of_counties = n())
+    
+chr_2020_counties %>% kable()
 ```
 
 We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "Rust Belt" region.
@@ -106,7 +107,7 @@ mosaic::favstats(median_household_income ~ income_cat, data = chr_2020) %>%
 str(chr_2020)
 ```
 
-## Codebook
+# Codebook
 
 Variable | Description
 --------- | ------------------------------------------------
@@ -131,9 +132,11 @@ income_cat | 4 levels: lower = median_household_income below 45k, lower_middle =
 
 - The binary predictor is `food_environment_index`, which was originally variable `v133_rawvalue`, and listed in the Diet and Exercise subcategory under Health Behaviors at the County Health Rankings. This measure is a scaled index that equally weighs two food environment indicators, limited access to healthy foods and food insecurity, on a scale from 0 (worst) to 10 (best). Limited access to healthy foods examines the percentage of low-income households less than 10 miles from a grocery store. Food insecurity estimates the percentage of low-income households which did not have a reliable source of food. Data is sourced from the 2015 & 2017 USDA Food Environment Atlas.
 
-### Proposal Requirements 1 and 2
+## Proposal Requirement 1
 
 We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "Rust Belt" region.
+
+## Proposal Requirement 2
 
 The variables chosen and their reasoning why are as follows:
 
@@ -148,21 +151,23 @@ The variables chosen and their reasoning why are as follows:
 - Food environment is important to maintaining a healthy lifestyle, and there is strong evidence food deserts plays a role in health outcomes.
 
 
-## Summarizing the tibble
+## Proposal Requirement 3
 
 ```{r}
 chr_2020
 ```
 
+## Proposal Requirement 4
+
 ```{r}
 Hmisc::describe(chr_2020)
 ```
 
-## Checking the Data
-
+## Three Important Checks
 ```{r}
 chr_2020 %>% 
-    summarize(sum(is.na(.)))
+    summarize(across(life_expectancy:food_environment_index, ~sum(is.na(.)))) %>%
+    kable()
 ```
 
 ```{r, message = FALSE}
@@ -173,8 +178,16 @@ mosaic::favstats(food_environment_index ~ state, data = chr_2020) %>%
 ```
 
 ```{r}
-chr_2020 %>% tabyl(food_binary)
-chr_2020 %>% tabyl(income_cat)
+chr_2020 %>% 
+    summarize(across(life_expectancy:food_environment_index, ~n_distinct(.))) %>%
+    kable()
+```
+
+```{r}
+chr_2020 %>% tabyl(food_binary) %>% kable()
+```
+```{r}
+chr_2020 %>% tabyl(income_cat) %>% kable()
 ```
 
 ## Saving the Tibble
@@ -183,7 +196,7 @@ chr_2020 %>% tabyl(income_cat)
 saveRDS(chr_2020, file = "chr_2020_Patrick_Wu_Long_Vu.Rds")
 ```
 
-## Final Proposal Requirement
+## Proposal Requirement 5
 
 The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median. In the end, we also combined the missing values category with one of the others to maintain the binary nature of the variable.
 
