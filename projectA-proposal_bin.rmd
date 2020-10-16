@@ -1,0 +1,206 @@
+---
+title: "Impact of Health Factors on Life Expectancy in Rust Belt States"
+author: "Patrick Wu, Long Vu"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+    number_sections: TRUE
+---
+
+# Setup and R Packages
+
+```{r setup, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(comment=NA)
+opts_knit$set(width=75)
+```
+
+```{r load_packages_here, message = FALSE}
+library(janitor)
+library(magrittr)
+library(tidyverse)
+```
+
+## Data Ingest
+
+```{r read_in_data_here, message = FALSE}
+chr_2020_raw <- read_csv("analytic_data2020_raw.csv", guess_max = 3200)
+```
+
+# Data Development
+
+## Selecting My Data
+
+```{r}
+chr_2020 <- chr_2020_raw %>%
+    filter(county_ranked == 1) %>%
+    filter(state %in% c("OH", "IN", "MI", "PA")) %>%
+    select(fipscode, state, county, 
+           v147_rawvalue, v003_rawvalue, v069_rawvalue, 
+           v063_rawvalue, v133_rawvalue) %>%
+    rename(life_expectancy = v147_rawvalue,
+           uninsured_adults = v003_rawvalue,
+           some_college = v069_rawvalue,
+           median_household_income = v063_rawvalue,
+           food_environment_index = v133_rawvalue)
+```
+
+### Proposal Requirements 1 and 2
+
+```{r}
+chr_2020_counties <- chr_2020 %>%
+  group_by(state) %>%
+  summarize(number_of_counties = n())
+chr_2020_counties
+```
+
+We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "rust belt" region.
+
+## Repairing the `fipscode` and factoring the `state`
+
+```{r}
+chr_2020 <- chr_2020 %>%
+    mutate(fipscode = str_pad(fipscode, 5, pad = "0"),
+           state = factor(state))
+```
+
+## Mutating Variables to Create Percentages
+
+```{r}
+chr_2020 <- chr_2020 %>%
+    mutate(uninsured_percent = uninsured_adults * 100, college_percent = some_college * 100)
+```
+
+## Creating Binary Categorical Variable
+
+### Splitting into two categories based on the median
+
+```{r, message = FALSE}
+chr_2020 <- chr_2020 %>%
+    mutate(food_binary = case_when(is.na(food_environment_index) ~ "other",
+                   food_environment_index < median(food_environment_index, na.rm = TRUE) ~ "other",
+                   TRUE ~ "high"),
+           food_binary = factor(food_binary))
+mosaic::favstats(food_environment_index ~ food_binary, data = chr_2020) %>% 
+    kable(digits = 3)
+```
+
+## Creating Multi-Category Variable
+
+### Creating a 4-Category variable with Specified Cutpoints
+
+```{r, message = FALSE}
+chr_2020 <- chr_2020 %>%
+    mutate(income_cat = case_when(
+        median_household_income < 45000 ~ "1_lower",
+        median_household_income < 55000 ~ "2_lower_middle",
+        median_household_income < 65000 ~ "3_upper_middle",
+        TRUE ~ "4_upper"),
+        income_cat = factor(income_cat))
+
+mosaic::favstats(median_household_income ~ income_cat, data = chr_2020) %>% 
+    kable(digits = 3)
+```
+
+## Structure of My Tibble
+
+```{r}
+str(chr_2020)
+```
+
+## Codebook
+
+Variable | Description
+--------- | ------------------------------------------------
+fipscode | FIPS code
+state | State: our four states are IN, MI, OH, and PA
+county | County Name
+life_expectancy | (v147) Life expectancy
+uninsured_adults | (v003) Proportion of uninsured adults
+some_college | (v069) Proportion of Adults 25-44 with post-secondary education
+median_household_income | (v063) Median Household Income
+food_environment_index | (v133) Food Environment Index
+food_binary | 2 levels: other = food_environment_index below 8 or missing value, high = greater than or equal to 8
+income_cat | 4 levels: lower = median_household_income below 45k, lower_middle = between 45-55k, upper_middle = between 55-65k, upper above 65k
+uninsured_percent | Percentage of uninsured adults
+college_percent | Percentage of Adults 25-44 with post-secondary education
+
+### Proposal Requirements 1 and 2
+
+We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "rust belt."
+
+The variables chosen are as follows:
+
+- The outcome variable is `life_expectancy`, which was originally variable `v147_rawvalue`, and listed in the Length of Life subcategory of Health Outcomes at the County Health Rankings. It describes the average number of years a person can expect to live, based on age-specific death rates. This measure is age-adjusted and sourced from the 2016-2018 National Center for Health Statistic Mortality Files. Life expectancy was chosen as our outcome variable due to its ease for interpretation, in comparison to other measures of mortality.
+
+- The first quantitative predictor is `uninsured_adults`, which  was originally variable `v003_rawvalue`, and listed in the Access to Care subcategory of Clinical Care at the County Health Rankings. It describes the percentage of people under 54 without health insurance coverage. This measure is created from statistical modeling, using data from the US Census Bureau’s 2017 Small Area Health Insurance Estimates program. This variable is of interest because health insurance coverage is a large barrier to providing health care access in many communities.
+
+- The second quantitative predictor is `some_college`, which was originally variable `v069_rawvalue`, and listed in the Education subcategory of Social & Economic Factors at the County Health Rankings. It describes the percentage of adults ages 25-44 with some post-secondary education. This includes, but is not limited to, vocational schools, junior colleges, and four-year colleges. This measure counts those who pursued post-secondary education, but did not receive a degree in addition to those who attained degrees. Data is sourced from the 2014-2018 American Community Survey’s 5-year estimates. We chose this variable because higher education is typically thought to lead to better paying jobs, which provide better health insurance and quality health care.
+
+- The multi-categorical predictor is `median_household_income`, which was originally variable `v063_rawvalue`, and listed in the Income subcategory of Social & Economic Factors at the County Health Rankings. It describes the income where half of the households in a county earn more and the other half earn less. This measure is created from statistical modeling, using data from the 2018 Small Area Income and Poverty Estimates program. We chose this variable because median household income is a strong indicator of income inequality between counties, which is directly linked to differences in health care outcomes.
+
+- The binary predictor is `food_environment_index`, which was originally variable `v133_rawvalue`, and listed in the Diet and Exercise subcategory under Health Behaviors at the County Health Rankings. This measure is a scaled index that equally weighs two food environment indicators, limited access to healthy foods and food insecurity, on a scale from 0 (worst) to 10 (best). Limited access to healthy foods examines the percentage of low-income households less than 10 miles from a grocery store. Food insecurity estimates the percentage of low-income households which did not have a reliable source of food. Data is sourced from the 2015 & 2017 USDA Food Environment Atlas. This variable was chosen because food environment is important to maintaining a healthy lifestyle, and there is strong evidence food deserts plays a role in health outcomes.
+
+
+## Summarizing the tibble
+
+```{r}
+chr_2020
+```
+
+```{r}
+Hmisc::describe(chr_2020)
+```
+
+## Checking the Data
+
+```{r}
+chr_2020 %>% 
+    summarize(sum(is.na(.)))
+```
+There are three missing values for the food environment index variable and none for any other variable.
+
+```{r, message = FALSE}
+mosaic::favstats(food_environment_index ~ state, data = chr_2020) %>%
+    select(state, n, missing) %>%
+    mutate(pct_available = 100*(n - missing)/n) %>%
+    kable()
+```
+All variables are available in at least 75% of the counties in each state.
+
+
+```{r}
+chr_2020 %>% 
+    summarize(across(life_expectancy:food_environment_index, ~n_distinct(.))) %>%
+    kable()
+```
+The raw versions of the selected variables all have more than 10 distinct non-missing values.
+
+```{r}
+chr_2020 %>% tabyl(food_binary)
+chr_2020 %>% tabyl(income_cat)
+```
+For the categorical variables, each category contains at least 10 counties.
+
+## Saving the Tibble
+
+```{r}
+saveRDS(chr_2020, file = "chr_2020_Patrick_Wu_Long_Vu.Rds")
+```
+
+## Final Proposal Requirement
+
+The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median.
+
+# Session Information
+
+```{r}
+sessionInfo()
+```
+
+
