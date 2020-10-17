@@ -131,6 +131,8 @@ ggplot(data = life_college, aes(x = some_college, y = life_expectancy)) +
     labs(x = '% of adults 25-44 with some college',
          y = 'Average life expectancy (years)')
 ```
+
+
 ```{r log}
 ggplot(data = life_college, aes(x = some_college, y = log(life_expectancy))) +
     geom_point() +
