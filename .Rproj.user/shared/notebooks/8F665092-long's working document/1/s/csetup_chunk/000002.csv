@@ -1,0 +1,7 @@
+"0","library(knitr)"
+"0","library(rmdformats)"
+"0",""
+"0","## Global options"
+"0","options(max.print=""75"")"
+"0","opts_chunk$set(comment=NA)"
+"0","opts_knit$set(width=75)"

@@ -1,0 +1,199 @@
+```{r setup, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(comment=NA)
+opts_knit$set(width=75)
+```
+
+```{r load_packages_here, message = FALSE}
+library(car)
+library(broom)
+library(janitor)
+library(magrittr)
+library(patchwork)
+library(tidyverse)
+```
+
+## Data Ingest
+
+```{r read_in_data_here, message = FALSE}
+chr_2020_raw <- read_csv("chr_2020_raw.csv", guess_max = 3200)
+```
+
+# Data Development
+
+## Selecting My Data
+
+```{r}
+chr_2020 <- chr_2020_raw %>%
+    filter(county_ranked == 1) %>%
+    filter(state %in% c("OH", "IN", "MI", "PA")) %>%
+    select(fipscode, state, county, 
+           v147_rawvalue, v003_rawvalue, v069_rawvalue, 
+           v063_rawvalue, v133_rawvalue) %>%
+    rename(life_expectancy = v147_rawvalue,
+           uninsured_adults = v003_rawvalue,
+           some_college = v069_rawvalue,
+           median_household_income = v063_rawvalue,
+           food_environment_index = v133_rawvalue)
+```
+
+```{r}
+options(dplyr.summarise.inform = FALSE)
+
+chr_2020_counties <- chr_2020 %>%
+    group_by(state) %>%
+    summarize(number_of_counties = n())
+    
+chr_2020_counties %>% kable()
+```
+```{r}
+chr_2020 <- chr_2020 %>%
+    mutate(fipscode = str_pad(fipscode, 5, pad = "0"),
+           state = factor(state))
+```
+
+## Mutating Variables to Create Percentages
+
+```{r}
+chr_2020 <- chr_2020 %>%
+    mutate(uninsured_adults = uninsured_adults * 100, some_college = some_college * 100)
+```
+
+## Creating Binary Categorical Variable
+
+### Splitting into two categories based on the median
+
+```{r, message = FALSE}
+chr_2020 <- chr_2020 %>%
+    mutate(food_binary = case_when(is.na(food_environment_index) ~ "other",
+                   food_environment_index < median(food_environment_index, na.rm = TRUE) ~ "other",
+                   TRUE ~ "high"),
+           food_binary = factor(food_binary))
+mosaic::favstats(food_environment_index ~ food_binary, data = chr_2020) %>% 
+    kable(digits = 3)
+```
+
+## Creating Multi-Category Variable
+
+### Creating a 4-Category variable with Specified Cutpoints
+
+```{r, message = FALSE}
+chr_2020 <- chr_2020 %>%
+    mutate(income_cat = case_when(
+        median_household_income < 45000 ~ "1_lower",
+        median_household_income < 55000 ~ "2_lower_middle",
+        median_household_income < 65000 ~ "3_upper_middle",
+        TRUE ~ "4_upper"),
+        income_cat = factor(income_cat))
+
+mosaic::favstats(median_household_income ~ income_cat, data = chr_2020) %>% 
+    kable(digits = 3)
+```
+
+# NEW STUFF
+
+## The Variables
+
+```{r}
+life_college <- chr_2020 %>%
+    select(state, county, life_expectancy, some_college) %>%
+    filter(complete.cases(life_expectancy, some_college))
+
+life_college
+```
+
+
+- The outcome variable is `life_expectancy`. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
+
+- The predictor variable is `some_college`. It describes the percentage of adults ages 25-44 with some post-secondary education in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.
+
+```{r}
+life_college %>%
+    filter(state == 'OH' & county == 'Cuyahoga County') %>% kable(digits = 2)
+```
+
+In Cuyahoga County, Ohio, `life_expectancy` averaged around 76.85 years of age and 68.64% of adults ages 25-44 had `some_college` attainment. 
+
+## Research Question
+
+What is the nature of association between `some_college` and `life_expectancy` in 330 counties of Indiana, Michigan, Ohio, and Pennsylvania?
+
+## Visualizing the Data
+
+```{r scatterplot}
+ggplot(data = life_college, aes(x = some_college, y = life_expectancy)) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+    labs(x = '% of adults 25-44 with some college',
+         y = 'Average life expectancy (years)')
+```
+```{r log}
+ggplot(data = life_college, aes(x = some_college, y = log(life_expectancy))) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+    labs(x = '% of adults 25-44 with some college',
+         y = 'Average life expectancy (years)')
+```
+```{r}
+
+```
+
+
+```{r}
+boxCox(life_college$life_expectancy ~ life_college$some_college)
+powerTransform(life_college$life_expectancy ~ life_college$some_college)
+```
+
+
+
+```{r linear_model}
+lm.life_college <- lm(life_expectancy ~ some_college, data = life_college)
+
+tidy(lm.life_college) %>% kable(digits = 2)
+
+glance(lm.life_college) %>% select(r.squared, p.value, sigma) %>% kable
+```
+
+```{r plotting_residuals}
+p0 <- augment(lm.life_college, data = life_college)
+
+p1 <- ggplot(data = p0, aes(sample = .resid)) +
+    geom_qq() +
+    geom_qq_line() + 
+    labs(title = 'Lm.life_college Residuals')
+
+p2 <- ggplot(data = p0, aes(x = .resid)) +
+   geom_histogram(aes(y = stat(density)), bins = 20) +
+    stat_function(fun = dnorm, args = list(mean = mean(p0$.resid), sd = sd(p0$.resid)), col = "black", lwd = 1.5) +
+    labs(title = "Hist + Normal Density: Residuals")
+
+p3 <- ggplot(data = p0, aes(x = resid.)) +
+    geom_boxplot(aes(x = .resid)) +
+    labs(title = 'Boxplot of Resid')
+
+p1 + (p2 / p3 + plot_layout(heights = c(4,1)))
+
+mosaic::favstats(~ .resid, data = p0) %>% kable(digits = 1)
+
+```
+
+```{r}
+ggplot(data = p0, aes(x = .fitted, y = .resid)) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,7 @@
+"0","options(dplyr.summarise.inform = FALSE)"
+"0",""
+"0","chr_2020_counties <- chr_2020 %>%"
+"0","    group_by(state) %>%"
+"0","    summarize(number_of_counties = n())"
+"0","    "
+"0","chr_2020_counties %>% kable()"

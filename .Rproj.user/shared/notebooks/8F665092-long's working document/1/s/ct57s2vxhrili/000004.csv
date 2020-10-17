@@ -1,0 +1,5 @@
+"0","ggplot(data = life_college, aes(x = some_college, y = log(life_expectancy))) +"
+"0","    geom_point() +"
+"0","    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +"
+"0","    labs(x = '% of adults 25-44 with some college',"
+"0","         y = 'Average life expectancy (years)')"

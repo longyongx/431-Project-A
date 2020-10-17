@@ -1,0 +1,7 @@
+"0","chr_2020 <- chr_2020 %>%"
+"0","    mutate(food_binary = case_when(is.na(food_environment_index) ~ ""other"","
+"0","                   food_environment_index < median(food_environment_index, na.rm = TRUE) ~ ""other"","
+"0","                   TRUE ~ ""high""),"
+"0","           food_binary = factor(food_binary))"
+"0","mosaic::favstats(food_environment_index ~ food_binary, data = chr_2020) %>% "
+"0","    kable(digits = 3)"

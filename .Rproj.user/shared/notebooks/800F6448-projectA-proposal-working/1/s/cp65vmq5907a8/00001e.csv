@@ -1,0 +1,3 @@
+"0",""
+"0","ggplot(data = life_college, aes(x = some_college)) +"
+"0","    geom_boxplot()"

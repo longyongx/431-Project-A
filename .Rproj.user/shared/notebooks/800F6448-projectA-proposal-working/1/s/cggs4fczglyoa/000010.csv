@@ -1,0 +1,3 @@
+"0","lm.life_college <- lm(life_expectancy ~ some_college, data = life_college)"
+"0",""
+"0","tidy(lm.life_college) %>% kable(digits = 2)"

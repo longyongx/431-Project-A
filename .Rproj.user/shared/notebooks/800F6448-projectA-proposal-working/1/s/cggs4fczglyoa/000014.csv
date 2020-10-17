@@ -1,0 +1,2 @@
+"0",""
+"0","glance(lm.life_college) %>% select(r.squared, p.value, sigma) %>% kable"

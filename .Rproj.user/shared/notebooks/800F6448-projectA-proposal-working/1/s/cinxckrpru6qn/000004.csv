@@ -1,0 +1,4 @@
+"0","mosaic::favstats(food_environment_index ~ state, data = chr_2020) %>%"
+"0","    select(state, n, missing) %>%"
+"0","    mutate(pct_available = 100*(n - missing)/n) %>%"
+"0","    kable()"

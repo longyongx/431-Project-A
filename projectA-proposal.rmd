@@ -53,6 +53,8 @@ chr_2020 <- chr_2020_raw %>%
 ```
 
 ```{r}
+options(dplyr.summarise.inform = FALSE)
+
 chr_2020_counties <- chr_2020 %>%
     group_by(state) %>%
     summarize(number_of_counties = n())
@@ -68,6 +70,13 @@ We chose four states to study: Indiana (92 counties), Michigan (83 counties), Oh
 chr_2020 <- chr_2020 %>%
     mutate(fipscode = str_pad(fipscode, 5, pad = "0"),
            state = factor(state))
+```
+
+## Mutating Variables to Create Percentages
+
+```{r}
+chr_2020 <- chr_2020 %>%
+    mutate(uninsured_adults = uninsured_adults * 100, some_college = some_college * 100)
 ```
 
 ## Creating Binary Categorical Variable
@@ -170,6 +179,8 @@ chr_2020 %>%
     kable()
 ```
 
+There are three missing values for the food environment index variable and none for any other variable.
+
 ```{r, message = FALSE}
 mosaic::favstats(food_environment_index ~ state, data = chr_2020) %>%
     select(state, n, missing) %>%
@@ -177,11 +188,15 @@ mosaic::favstats(food_environment_index ~ state, data = chr_2020) %>%
     kable()
 ```
 
+All variables are available in at least 75% of the counties in each state.
+
 ```{r}
 chr_2020 %>% 
     summarize(across(life_expectancy:food_environment_index, ~n_distinct(.))) %>%
     kable()
 ```
+
+The raw versions of the selected variables all have more than 10 distinct non-missing values.
 
 ```{r}
 chr_2020 %>% tabyl(food_binary) %>% kable()
@@ -189,6 +204,8 @@ chr_2020 %>% tabyl(food_binary) %>% kable()
 ```{r}
 chr_2020 %>% tabyl(income_cat) %>% kable()
 ```
+
+For the categorical variables, each category contains at least 10 counties.
 
 ## Saving the Tibble
 
@@ -199,6 +216,30 @@ saveRDS(chr_2020, file = "chr_2020_Patrick_Wu_Long_Vu.Rds")
 ## Proposal Requirement 5
 
 The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median. In the end, we also combined the missing values category with one of the others to maintain the binary nature of the variable.
+
+# Analysis 1
+
+## The Variables
+
+```{r}
+life_college <- chr_2020 %>%
+    select(state, county, life_expectancy, some_college) %>%
+    filter(complete.cases(life_expectancy, some_college))
+
+life_college
+```
+
+
+- The outcome variable is `life_expectancy`. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
+
+- The predictor variable is `some_college`. It describes the percentage of adults ages 25-44 with some post-secondary education in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.
+
+```{r}
+life_college %>%
+    filter(state == 'OH' & county == 'Cuyahoga County') %>% kable(digits = 2)
+```
+
+In Cuyahoga County, Ohio, `life_expectancy` averaged around 76.85 years of age and 68.64% of adults ages 25-44 had `some_college`. 
 
 # Session Information
 

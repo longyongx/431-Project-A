@@ -1,0 +1,2 @@
+"0","chr_2020 <- chr_2020 %>%"
+"0","    mutate(uninsured_adults = uninsured_adults * 100, some_college = some_college * 100)"

@@ -1,0 +1,7 @@
+"0",""
+"0","p1 <- augment(lm.life_college) %>%"
+"0","    ggplot(., aes(x = some_college, y = .resid)) +"
+"0","    geom_point() +"
+"0","    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE)"
+"0",""
+"0","p1"

@@ -1,0 +1,4 @@
+"0",""
+"0","ggplot(data = life_college, aes(sample = life_expectancy))+"
+"0","    geom_qq() +"
+"0","    geom_qq_line()"

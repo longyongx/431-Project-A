@@ -10,7 +10,7 @@
 
 <meta name="author" content="Patrick Wu, Long Vu" />
 
-<meta name="date" content="2020-09-27" />
+<meta name="date" content="2020-10-15" />
 
 <title>Impact of Health Factors on Life Expectancy in Rust Belt States</title>
 
@@ -1608,9 +1608,10 @@ $(document).ready(function () {
       <li><a href="#data-development"><span class="toc-section-number">2</span> Data Development</a><ul>
       <li><a href="#selecting-my-data"><span class="toc-section-number">2.1</span> Selecting My Data</a></li>
       <li><a href="#repairing-the-fipscode-and-factoring-the-state"><span class="toc-section-number">2.2</span> Repairing the <code>fipscode</code> and factoring the <code>state</code></a></li>
-      <li><a href="#creating-binary-categorical-variable"><span class="toc-section-number">2.3</span> Creating Binary Categorical Variable</a></li>
-      <li><a href="#creating-multi-category-variable"><span class="toc-section-number">2.4</span> Creating Multi-Category Variable</a></li>
-      <li><a href="#structure-of-my-tibble"><span class="toc-section-number">2.5</span> Structure of My Tibble</a></li>
+      <li><a href="#mutating-variables-to-create-percentages"><span class="toc-section-number">2.3</span> Mutating Variables to Create Percentages</a></li>
+      <li><a href="#creating-binary-categorical-variable"><span class="toc-section-number">2.4</span> Creating Binary Categorical Variable</a></li>
+      <li><a href="#creating-multi-category-variable"><span class="toc-section-number">2.5</span> Creating Multi-Category Variable</a></li>
+      <li><a href="#structure-of-my-tibble"><span class="toc-section-number">2.6</span> Structure of My Tibble</a></li>
       </ul></li>
       <li><a href="#codebook"><span class="toc-section-number">3</span> Codebook</a><ul>
       <li><a href="#proposal-requirement-1"><span class="toc-section-number">3.1</span> Proposal Requirement 1</a></li>
@@ -1621,13 +1622,16 @@ $(document).ready(function () {
       <li><a href="#saving-the-tibble"><span class="toc-section-number">3.6</span> Saving the Tibble</a></li>
       <li><a href="#proposal-requirement-5"><span class="toc-section-number">3.7</span> Proposal Requirement 5</a></li>
       </ul></li>
-      <li><a href="#session-information"><span class="toc-section-number">4</span> Session Information</a></li>
+      <li><a href="#analysis-1"><span class="toc-section-number">4</span> Analysis 1</a><ul>
+      <li><a href="#the-variables"><span class="toc-section-number">4.1</span> The Variables</a></li>
+      </ul></li>
+      <li><a href="#session-information"><span class="toc-section-number">5</span> Session Information</a></li>
       </ul>
     </div>
     
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
               <p class="author"><span class="glyphicon glyphicon-user"></span> Patrick Wu, Long Vu</p>
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2020-09-27</p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2020-10-15</p>
         </div>
 </div>
 
@@ -1660,11 +1664,13 @@ $(document).ready(function () {
 <span id="cb3-9"><a href="#cb3-9"></a>           <span class="dt">some_college =</span> v069_rawvalue,</span>
 <span id="cb3-10"><a href="#cb3-10"></a>           <span class="dt">median_household_income =</span> v063_rawvalue,</span>
 <span id="cb3-11"><a href="#cb3-11"></a>           <span class="dt">food_environment_index =</span> v133_rawvalue)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>chr_<span class="dv">2020</span>_counties &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">    </span><span class="kw">group_by</span>(state) <span class="op">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="dt">number_of_counties =</span> <span class="kw">n</span>())</span></code></pre></div>
-<pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>chr_<span class="dv">2020</span>_counties <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">options</span>(<span class="dt">dplyr.summarise.inform =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a>chr_<span class="dv">2020</span>_counties &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="st">    </span><span class="kw">group_by</span>(state) <span class="op">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="dt">number_of_counties =</span> <span class="kw">n</span>())</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    </span>
+<span id="cb4-7"><a href="#cb4-7"></a>chr_<span class="dv">2020</span>_counties <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1695,21 +1701,26 @@ $(document).ready(function () {
 </div>
 <div id="repairing-the-fipscode-and-factoring-the-state" class="section level2">
 <h2><span class="header-section-number">2.2</span> Repairing the <code>fipscode</code> and factoring the <code>state</code></h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fipscode =</span> <span class="kw">str_pad</span>(fipscode, <span class="dv">5</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>),</span>
-<span id="cb7-3"><a href="#cb7-3"></a>           <span class="dt">state =</span> <span class="kw">factor</span>(state))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fipscode =</span> <span class="kw">str_pad</span>(fipscode, <span class="dv">5</span>, <span class="dt">pad =</span> <span class="st">&quot;0&quot;</span>),</span>
+<span id="cb5-3"><a href="#cb5-3"></a>           <span class="dt">state =</span> <span class="kw">factor</span>(state))</span></code></pre></div>
+</div>
+<div id="mutating-variables-to-create-percentages" class="section level2">
+<h2><span class="header-section-number">2.3</span> Mutating Variables to Create Percentages</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">uninsured_adults =</span> uninsured_adults <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="dt">some_college =</span> some_college <span class="op">*</span><span class="st"> </span><span class="dv">100</span>)</span></code></pre></div>
 </div>
 <div id="creating-binary-categorical-variable" class="section level2">
-<h2><span class="header-section-number">2.3</span> Creating Binary Categorical Variable</h2>
+<h2><span class="header-section-number">2.4</span> Creating Binary Categorical Variable</h2>
 <div id="splitting-into-two-categories-based-on-the-median" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Splitting into two categories based on the median</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">food_binary =</span> <span class="kw">case_when</span>(<span class="kw">is.na</span>(food_environment_index) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
-<span id="cb8-3"><a href="#cb8-3"></a>                   food_environment_index <span class="op">&lt;</span><span class="st"> </span><span class="kw">median</span>(food_environment_index, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
-<span id="cb8-4"><a href="#cb8-4"></a>                   <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;high&quot;</span>),</span>
-<span id="cb8-5"><a href="#cb8-5"></a>           <span class="dt">food_binary =</span> <span class="kw">factor</span>(food_binary))</span>
-<span id="cb8-6"><a href="#cb8-6"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>food_binary, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<h3><span class="header-section-number">2.4.1</span> Splitting into two categories based on the median</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">food_binary =</span> <span class="kw">case_when</span>(<span class="kw">is.na</span>(food_environment_index) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>                   food_environment_index <span class="op">&lt;</span><span class="st"> </span><span class="kw">median</span>(food_environment_index, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">~</span><span class="st"> &quot;other&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>                   <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;high&quot;</span>),</span>
+<span id="cb7-5"><a href="#cb7-5"></a>           <span class="dt">food_binary =</span> <span class="kw">factor</span>(food_binary))</span>
+<span id="cb7-6"><a href="#cb7-6"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>food_binary, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1755,19 +1766,19 @@ $(document).ready(function () {
 </div>
 </div>
 <div id="creating-multi-category-variable" class="section level2">
-<h2><span class="header-section-number">2.4</span> Creating Multi-Category Variable</h2>
+<h2><span class="header-section-number">2.5</span> Creating Multi-Category Variable</h2>
 <div id="creating-a-4-category-variable-with-specified-cutpoints" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> Creating a 4-Category variable with Specified Cutpoints</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">income_cat =</span> <span class="kw">case_when</span>(</span>
-<span id="cb9-3"><a href="#cb9-3"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">45000</span> <span class="op">~</span><span class="st"> &quot;1_lower&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">55000</span> <span class="op">~</span><span class="st"> &quot;2_lower_middle&quot;</span>,</span>
-<span id="cb9-5"><a href="#cb9-5"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">65000</span> <span class="op">~</span><span class="st"> &quot;3_upper_middle&quot;</span>,</span>
-<span id="cb9-6"><a href="#cb9-6"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;4_upper&quot;</span>),</span>
-<span id="cb9-7"><a href="#cb9-7"></a>        <span class="dt">income_cat =</span> <span class="kw">factor</span>(income_cat))</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(median_household_income <span class="op">~</span><span class="st"> </span>income_cat, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<h3><span class="header-section-number">2.5.1</span> Creating a 4-Category variable with Specified Cutpoints</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>chr_<span class="dv">2020</span> &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">income_cat =</span> <span class="kw">case_when</span>(</span>
+<span id="cb8-3"><a href="#cb8-3"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">45000</span> <span class="op">~</span><span class="st"> &quot;1_lower&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">55000</span> <span class="op">~</span><span class="st"> &quot;2_lower_middle&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5"></a>        median_household_income <span class="op">&lt;</span><span class="st"> </span><span class="dv">65000</span> <span class="op">~</span><span class="st"> &quot;3_upper_middle&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;4_upper&quot;</span>),</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        <span class="dt">income_cat =</span> <span class="kw">factor</span>(income_cat))</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(median_household_income <span class="op">~</span><span class="st"> </span>income_cat, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1837,15 +1848,15 @@ $(document).ready(function () {
 </div>
 </div>
 <div id="structure-of-my-tibble" class="section level2">
-<h2><span class="header-section-number">2.5</span> Structure of My Tibble</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">str</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
+<h2><span class="header-section-number">2.6</span> Structure of My Tibble</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">str</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
 <pre><code>tibble [330 x 10] (S3: tbl_df/tbl/data.frame)
  $ fipscode               : chr [1:330] &quot;18001&quot; &quot;18003&quot; &quot;18005&quot; &quot;18007&quot; ...
  $ state                  : Factor w/ 4 levels &quot;IN&quot;,&quot;MI&quot;,&quot;OH&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
  $ county                 : chr [1:330] &quot;Adams County&quot; &quot;Allen County&quot; &quot;Bartholomew County&quot; &quot;Benton County&quot; ...
  $ life_expectancy        : num [1:330] 79 77.1 78.2 79.3 75.1 ...
- $ uninsured_adults       : num [1:330] 0.1333 0.11 0.1102 0.1224 0.0983 ...
- $ some_college           : num [1:330] 0.523 0.668 0.667 0.592 0.55 ...
+ $ uninsured_adults       : num [1:330] 13.33 11 11.02 12.24 9.83 ...
+ $ some_college           : num [1:330] 52.3 66.8 66.7 59.2 55 ...
  $ median_household_income: num [1:330] 56693 54473 63067 51649 45161 ...
  $ food_environment_index : num [1:330] 8.1 7.3 7.8 8.4 8.3 8.9 8.7 8.7 8.6 7.9 ...
  $ food_binary            : Factor w/ 2 levels &quot;high&quot;,&quot;other&quot;: 1 2 2 1 1 1 1 1 1 2 ...
@@ -1932,26 +1943,26 @@ $(document).ready(function () {
 </div>
 <div id="proposal-requirement-3" class="section level2">
 <h2><span class="header-section-number">3.3</span> Proposal Requirement 3</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>chr_<span class="dv">2020</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>chr_<span class="dv">2020</span></span></code></pre></div>
 <pre><code># A tibble: 330 x 10
    fipscode state county life_expectancy uninsured_adults some_college
    &lt;chr&gt;    &lt;fct&gt; &lt;chr&gt;            &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
- 1 18001    IN    Adams~            79.0           0.133         0.523
- 2 18003    IN    Allen~            77.1           0.110         0.668
- 3 18005    IN    Barth~            78.2           0.110         0.667
- 4 18007    IN    Bento~            79.3           0.122         0.592
- 5 18009    IN    Black~            75.1           0.0983        0.550
- 6 18011    IN    Boone~            78.6           0.0743        0.800
- 7 18013    IN    Brown~            78.4           0.113         0.650
- 8 18015    IN    Carro~            79.3           0.113         0.542
- 9 18017    IN    Cass ~            76.0           0.150         0.496
-10 18019    IN    Clark~            74.9           0.0989        0.638
+ 1 18001    IN    Adams~            79.0            13.3          52.3
+ 2 18003    IN    Allen~            77.1            11.0          66.8
+ 3 18005    IN    Barth~            78.2            11.0          66.7
+ 4 18007    IN    Bento~            79.3            12.2          59.2
+ 5 18009    IN    Black~            75.1             9.83         55.0
+ 6 18011    IN    Boone~            78.6             7.43         80.0
+ 7 18013    IN    Brown~            78.4            11.3          65.0
+ 8 18015    IN    Carro~            79.3            11.3          54.2
+ 9 18017    IN    Cass ~            76.0            15.0          49.6
+10 18019    IN    Clark~            74.9             9.89         63.8
 # ... with 320 more rows, and 4 more variables: median_household_income &lt;dbl&gt;,
 #   food_environment_index &lt;dbl&gt;, food_binary &lt;fct&gt;, income_cat &lt;fct&gt;</code></pre>
 </div>
 <div id="proposal-requirement-4" class="section level2">
 <h2><span class="header-section-number">3.4</span> Proposal Requirement 4</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>Hmisc<span class="op">::</span><span class="kw">describe</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>Hmisc<span class="op">::</span><span class="kw">describe</span>(chr_<span class="dv">2020</span>)</span></code></pre></div>
 <pre><code>chr_2020 
 
  10  Variables      330  Observations
@@ -1988,21 +1999,21 @@ highest: 81.92076 82.37232 82.43664 82.83152 82.92225
 --------------------------------------------------------------------------------
 uninsured_adults 
        n  missing distinct     Info     Mean      Gmd      .05      .10 
-     330        0      330        1  0.08739  0.02235  0.05926  0.06590 
+     330        0      330        1    8.739    2.235    5.926    6.590 
      .25      .50      .75      .90      .95 
- 0.07318  0.08437  0.09679  0.11239  0.12609 
+   7.318    8.437    9.679   11.239   12.609 
 
-lowest : 0.04784844 0.04907289 0.05178950 0.05295733 0.05346345
-highest: 0.14961268 0.16538089 0.18683313 0.23997153 0.24318956
+lowest :  4.784844  4.907289  5.178950  5.295733  5.346345
+highest: 14.961268 16.538089 18.683313 23.997153 24.318956
 --------------------------------------------------------------------------------
 some_college 
        n  missing distinct     Info     Mean      Gmd      .05      .10 
-     330        0      330        1   0.5825   0.1084   0.4404   0.4758 
+     330        0      330        1    58.25    10.84    44.04    47.58 
      .25      .50      .75      .90      .95 
-  0.5175   0.5745   0.6508   0.7063   0.7424 
+   51.75    57.45    65.08    70.63    74.24 
 
-lowest : 0.2038035 0.2102885 0.2998754 0.3756188 0.3829104
-highest: 0.7995810 0.8143447 0.8506786 0.8581244 0.8689773
+lowest : 20.38035 21.02885 29.98754 37.56188 38.29104
+highest: 79.95810 81.43447 85.06786 85.81244 86.89773
 --------------------------------------------------------------------------------
 median_household_income 
        n  missing distinct     Info     Mean      Gmd      .05      .10 
@@ -2039,9 +2050,9 @@ Proportion          0.118          0.488          0.273          0.121
 </div>
 <div id="three-important-checks" class="section level2">
 <h2><span class="header-section-number">3.5</span> Three Important Checks</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">sum</span>(<span class="kw">is.na</span>(.)))) <span class="op">%&gt;%</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">sum</span>(<span class="kw">is.na</span>(.)))) <span class="op">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <colgroup>
 <col width="17%"></col>
@@ -2069,10 +2080,11 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>state, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2"></a><span class="st">    </span><span class="kw">select</span>(state, n, missing) <span class="op">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">pct_available =</span> <span class="dv">100</span><span class="op">*</span>(n <span class="op">-</span><span class="st"> </span>missing)<span class="op">/</span>n) <span class="op">%&gt;%</span></span>
-<span id="cb17-4"><a href="#cb17-4"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<p>There are three missing values for the food environment index variable and none for any other variable.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>mosaic<span class="op">::</span><span class="kw">favstats</span>(food_environment_index <span class="op">~</span><span class="st"> </span>state, <span class="dt">data =</span> chr_<span class="dv">2020</span>) <span class="op">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="st">    </span><span class="kw">select</span>(state, n, missing) <span class="op">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">pct_available =</span> <span class="dv">100</span><span class="op">*</span>(n <span class="op">-</span><span class="st"> </span>missing)<span class="op">/</span>n) <span class="op">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -2109,9 +2121,10 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">n_distinct</span>(.))) <span class="op">%&gt;%</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
+<p>All variables are available in at least 75% of the counties in each state.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">    </span><span class="kw">summarize</span>(<span class="kw">across</span>(life_expectancy<span class="op">:</span>food_environment_index, <span class="op">~</span><span class="kw">n_distinct</span>(.))) <span class="op">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">    </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <colgroup>
 <col width="17%"></col>
@@ -2139,7 +2152,8 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(food_binary) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<p>The raw versions of the selected variables all have more than 10 distinct non-missing values.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(food_binary) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -2161,7 +2175,7 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(income_cat) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tabyl</span>(income_cat) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -2193,19 +2207,70 @@ Proportion          0.118          0.488          0.273          0.121
 </tr>
 </tbody>
 </table>
+<p>For the categorical variables, each category contains at least 10 counties.</p>
 </div>
 <div id="saving-the-tibble" class="section level2">
 <h2><span class="header-section-number">3.6</span> Saving the Tibble</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">saveRDS</span>(chr_<span class="dv">2020</span>, <span class="dt">file =</span> <span class="st">&quot;chr_2020_Patrick_Wu_Long_Vu.Rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">saveRDS</span>(chr_<span class="dv">2020</span>, <span class="dt">file =</span> <span class="st">&quot;chr_2020_Patrick_Wu_Long_Vu.Rds&quot;</span>)</span></code></pre></div>
 </div>
 <div id="proposal-requirement-5" class="section level2">
 <h2><span class="header-section-number">3.7</span> Proposal Requirement 5</h2>
 <p>The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median. In the end, we also combined the missing values category with one of the others to maintain the binary nature of the variable.</p>
 </div>
 </div>
+<div id="analysis-1" class="section level1">
+<h1><span class="header-section-number">4</span> Analysis 1</h1>
+<div id="the-variables" class="section level2">
+<h2><span class="header-section-number">4.1</span> The Variables</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>life_college &lt;-<span class="st"> </span>chr_<span class="dv">2020</span> <span class="op">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">    </span><span class="kw">select</span>(state, county, life_expectancy, some_college) <span class="op">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="st">    </span><span class="kw">filter</span>(<span class="kw">complete.cases</span>(life_expectancy, some_college))</span>
+<span id="cb21-4"><a href="#cb21-4"></a></span>
+<span id="cb21-5"><a href="#cb21-5"></a>life_college</span></code></pre></div>
+<pre><code># A tibble: 330 x 4
+   state county             life_expectancy some_college
+   &lt;fct&gt; &lt;chr&gt;                        &lt;dbl&gt;        &lt;dbl&gt;
+ 1 IN    Adams County                  79.0         52.3
+ 2 IN    Allen County                  77.1         66.8
+ 3 IN    Bartholomew County            78.2         66.7
+ 4 IN    Benton County                 79.3         59.2
+ 5 IN    Blackford County              75.1         55.0
+ 6 IN    Boone County                  78.6         80.0
+ 7 IN    Brown County                  78.4         65.0
+ 8 IN    Carroll County                79.3         54.2
+ 9 IN    Cass County                   76.0         49.6
+10 IN    Clark County                  74.9         63.8
+# ... with 320 more rows</code></pre>
+<ul>
+<li><p>The outcome variable is <code>life_expectancy</code>. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.</p></li>
+<li><p>The predictor variable is <code>some_college</code>. It describes the percentage of adults ages 25-44 with some post-secondary education in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.</p></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>life_college <span class="op">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="st">    </span><span class="kw">filter</span>(state <span class="op">==</span><span class="st"> &#39;OH&#39;</span> <span class="op">&amp;</span><span class="st"> </span>county <span class="op">==</span><span class="st"> &#39;Cuyahoga County&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">kable</span>(<span class="dt">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">state</th>
+<th align="left">county</th>
+<th align="right">life_expectancy</th>
+<th align="right">some_college</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">OH</td>
+<td align="left">Cuyahoga County</td>
+<td align="right">76.85</td>
+<td align="right">68.64</td>
+</tr>
+</tbody>
+</table>
+<p>In Cuyahoga County, Ohio, <code>life_expectancy</code> averaged around 76.85 years of age and 68.64% of adults ages 25-44 had <code>some_college</code>.</p>
+</div>
+</div>
 <div id="session-information" class="section level1">
-<h1><span class="header-section-number">4</span> Session Information</h1>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<h1><span class="header-section-number">5</span> Session Information</h1>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.0.2 (2020-06-22)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 18363)
