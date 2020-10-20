@@ -7,8 +7,9 @@ output:
     highlight: kate
     number_sections: TRUE
 ---
+# Preliminaries
 
-# Setup and R Packages
+## Setup and R Packages
 
 ```{r setup, echo=FALSE, cache=FALSE}
 library(knitr)
@@ -23,6 +24,7 @@ opts_knit$set(width=75)
 ```{r load_packages_here, message = FALSE}
 library(janitor)
 library(magrittr)
+library(broom)
 library(tidyverse)
 ```
 
@@ -113,7 +115,7 @@ mosaic::favstats(median_household_income ~ income_cat, data = chr_2020) %>%
 str(chr_2020)
 ```
 
-## Codebook
+# Codebook
 
 Variable | Description
 --------- | ------------------------------------------------
@@ -130,7 +132,7 @@ income_cat | 4 levels: lower = median_household_income below 45k, lower_middle =
 uninsured_percent | Percentage of uninsured adults
 college_percent | Percentage of Adults 25-44 with post-secondary education
 
-### Proposal Requirements 1 and 2
+## Proposal Requirements 1 and 2
 
 We chose four states to study: Indiana (92 counties), Michigan (83 counties), Ohio (88 counties), and Pennsylvania (67 counties). Together, these four states comprise a total of 330 counties. We chose to focus on states considered to be part of the "rust belt."
 
@@ -196,6 +198,95 @@ saveRDS(chr_2020, file = "chr_2020_Patrick_Wu_Long_Vu.Rds")
 ## Final Proposal Requirement
 
 The most challenging part of assembling the proposal was determining how to deal with the missing values for the Food Environment Index. The missing values prevented us from separating the Food Environment Index values into the desired binary categories. While we determined that the missing values were the issue relatively quickly, we were not sure how to create the categories without creating another data set. We tried to assign the missing values to a third category but this initially did not work. However, eventually the desired result was achieved after excluding the missing values when calculating the median.
+
+# Analysis 2
+
+## The Variables
+
+The outcome variable for this analysis is life expectancy. This is the average number of years a person can expect to live based on age-specific death rates in a particular county. The predictor variable for this analysis is median household income. This includes incomes from wages, salaries, self-employment, interest, dividends, rentals, royalties, estates, trusts, Social Security, Railroad Retirement, Supplemental Security Income, public assistance, welfare, and pensions. It does not include capital gains, non-business sale of property, food stamps, subsidies for public housing or medical care, withdrawal of bank deposits, money borrowed, tax refunds, gifts, lump-sum inheritances, or insurance payments. Income is described with 4 categories -- annual income less than 45000, from 45000 to 55000, from 55000 to 65000, and 65000 and above. Each of these categories includes its lower bound but not its upper bound.
+
+The outcome variable is named life_expectancy and the predictor variable is named income_cat. They are contained in a tibble named chr_2020, which contains complete data from all the counties in Indiana, Michigan, Ohio, and Pennsylvania.
+
+```{r}
+cuyahoga <- chr_2020 %>%
+  filter(county == "Cuyahoga County")
+```
+
+Cuyahoga County, Ohio has a life expectancy of `r round(cuyahoga$life_expectancy,2)` and a median household income category of `r cuyahoga$income_cat`.
+
+## Research Question
+
+The research question for this analysis is as follows:
+
+Are progressively higher-income categories associated with progressively higher life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania?
+
+## Visualizing the Data
+
+```{r}
+ggplot(data = chr_2020, mapping = aes(x = income_cat, y = life_expectancy, fill = income_cat)) +
+  geom_violin(show.legend = FALSE) + 
+  geom_boxplot(show.legend = FALSE) + 
+  theme_bw() + 
+  labs(title="Life Expectancy is Higher for Higher Income Categories", y="Life Expectancy in Years", x="Income Category")
+```
+
+This plot shows that each progressively higher income category has a higher average life expectancy, with an increase in the median life expectancy of more than a year for each each category relative to the one below it. The interquartile ranges remain relatively consistent for each category, particularly for the three highest categories. There are a few outlier counties in the middle two categories which have higher-than-expected life expectancies. Most notably, the county with the highest life expectancy is not in the highest income category.
+
+## The Fitted Model
+
+```{r}
+model2 <- lm(life_expectancy ~ income_cat, data = chr_2020)
+tidy(model2, conf.int = T, conf.level = 0.90) %>% kable(dig = 2)
+
+glance(model2) %>% 
+  select(r.squared, statistic, df, df.residual, 
+         p.value, sigma, nobs) %>% 
+  kable(dig = c(3, 2, 0, 0, 4, 2, 0))
+```
+
+The prediction equation is as follows:
+
+Predicted Life Expectancy = 75.82 + 1.09(Category 2) + 2.28(Category 3) + 3.69(Category 4)
+
+The intercept of this equation, 75.82, is the predicted life expectancy (or mean life expectancy) for the counties in the lowest income category. The predicted life expectancy for the next highest income category is 1.09 years greater than this value and is thus `r 75.82+1.09`. Similarly, the predicted life expectancy for the second highest income category is 2.28 + 75.82 or `r 75.82+2.28` and the predicted life expectancy for the highest income category is 3.69 + 75.82 or `r 75.82+3.69`. These values correspond with the pattern observed in the boxplot, where each progressively higher income category is associated with an increased life expectancy of at least 1 year relative to the previous category.
+
+The model has an R-squared of 0.313. In other words, 31.3% of the variance in life expectancy among counties is predictable using the four income categories. The residual standard error of the model is 1.55 and the model was fit to 330 observations.
+
+## Prediction Analysis
+
+```{r}
+augment2 <- augment(model2, chr_2020)
+
+ggplot(augment2, aes(sample = .resid)) +
+  geom_qq() + 
+  geom_qq_line(col = "red") + 
+  theme_bw() + 
+  facet_wrap(~ income_cat) + 
+  labs(title = "Residuals vs Theoretical Quantiles",
+       y = "Residuals")
+  
+ggplot(augment2, aes(y = .resid, x = "", fill = income_cat)) +
+  geom_violin(show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE) + 
+  theme_bw() + 
+  facet_wrap(~ income_cat) + 
+  labs(y = "Residuals", x = "")
+
+augment2 <- augment2 %>%
+  mutate(residual = abs(.resid)) %>%
+  arrange(desc(residual)) %>%
+  select(state, county, residual, .resid)
+
+augment2
+```
+
+The normal Q-Q plots and boxplots show reasonable normality for the residuals in each category, though the highest and lowest income categories seem notably less normal than the other two. The model predicted Cuyahoga County's life expectancy to be `r 75.82+1.09`, while the actual life expectancy was `r round(cuyahoga$life_expectancy,2)`. The two counties where the model was least successful in predicting life expectancy were Centre County in Pennsylvania and Fayette County in Indiana.
+
+## Conclusions and Limitations
+
+The goal of this analysis was to determine whether progressively higher-income categories were associated with progressively higher life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania. The results of the analysis indicate that higher-income categories are indeed associated with correspondingly higher life expectancies. Each income category exhibited a mean and median life expectancy at least 1 year greater than the corresponding values for the income category directly below it. Specifically, the mean life expectancy for counties with a median annual household income of less than \$45,000 was 75.82. The mean life expectancy for counties with a median annual household income of \$45,000 to \$55,000 was `r 75.82+1.09`. The mean life expectancy for counties with a median annual household income of \$55,000 to \$65,000 was `r 75.82+2.28`. Finally, the mean life expectancy for counties with a median annual household income of \$65,000 or greater was `r 75.82+3.69`.
+
+The primary concern for this analysis is a relative lack of normality in the life expectancies and therefore the residuals for the counties in the lowest and highest income categories. This suggests that these categories may be better represented through further subdivision. Alternatively, quantitative values for median household income could be used in the analysis rather than categories. Furthermore, this analysis applies only to the county level and the conclusions drawn cannot be applied to individual households either in the states of interest or elsewhere.
 
 # Session Information
 
