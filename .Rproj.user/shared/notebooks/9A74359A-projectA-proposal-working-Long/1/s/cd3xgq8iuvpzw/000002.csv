@@ -1,0 +1,2 @@
+"0","m2 %>%"
+"0","    arrange(desc(abs(.resid))) %>% head(2) %>% kable(digits = 2)"

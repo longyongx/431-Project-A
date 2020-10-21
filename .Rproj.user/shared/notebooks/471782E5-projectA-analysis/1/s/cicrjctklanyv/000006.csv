@@ -1,0 +1,2 @@
+"0","augment2 %>%"
+"0","    filter(state == 'OH' & county == 'Cuyahoga County') %>% kable(digits = 2)"

@@ -1,0 +1,2 @@
+"0",""
+"0","mosaic::favstats(~ .resid, data = m1) %>% kable(digits = 1)"
