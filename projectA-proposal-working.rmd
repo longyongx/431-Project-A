@@ -353,7 +353,7 @@ mosaic::favstats(~ .resid, data = m1) %>% kable(digits = 1)
 
 ```
 
-The QQ plot illustrates a fairly normal distribution with minimal skew. Linearity holds well for the model with a few points curving upwards from the QQ line on the right side of the plot, and slightly downwards on the left side. The histogram also shows that the distribution of the residuals approximate normality, though more points appear to cluster towards the center of the plot. The boxplot shows that most points fall within range of a normal distribution with a small number of outliers on either end of the data points.
+The QQ plot illustrates a fairly normal distribution with minimal skew. Linearity holds well for the model with a few points curving upwards from the QQ line on the right side of the plot, and slightly downwards on the left side. The histogram also shows that the distribution of the residuals approximate normality, though more points appear to cluster towards the center of the plot. The boxplot shows that most points fall within range of a normal distribution with a few outliers on either end of the data points. Both the mean and median of the residuals equal 0, indicating that a number of points fall exactly on the linear regression.
 
 ```{r model_cuyahoga}
 m1 %>%
@@ -371,7 +371,7 @@ This linear model is least successful at predicting `life_expectancy` in Union C
 
 ## Conclusions and Limitations
 
-This analysis sought to discern the association of `life_expectancy` and `some_college` in 330 counties between the states of Indiana, Michigan, Ohio, and Pennsylvania. A positive relationship was found between average life expectancy and percentage of adults with some form of post-secondary education in these counties. 
+This analysis sought to discern the association of `life_expectancy` and `some_college` in 330 counties between the states of Indiana, Michigan, Ohio, and Pennsylvania. A positive relationship was found between average life expectancy and percentage of adults with some form of post-secondary education in these counties. The linear model predicts `life_expectancy` to be equal to an increase of 0.08 years for every percentage of adults with some form of post-secondary education in a county, when starting at 72.87 years of age. The QQ plot of the residuals of the linear model indicate that the data is fairly close to a normal distribution. This is also supported by the histogram of the residuals.
 
 A key limitation is that this analysis only looks at data at the county level. Counties themselves are segregated by neighborhoods of varying socioeconomic factors and race which may confound the data. It cannot be said if interpretations from this analysis would apply equally to all residents of a county.
 
@@ -474,7 +474,7 @@ life_uninsured
 
 - `uninsured_adults` is the first predictor variable. It is the percentage of people under 54 without health insurance coverage in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.
 
-- `state` is the second predictor variable. It is a categorical variable consisting of the four states Indiana, Michigan, Ohio, and Pennsylvania.
+- `state` is the second predictor variable. It is a categorical variable consisting of the four states of interest: Indiana, Michigan, Ohio, and Pennsylvania.
 
 ## Research Question
 
