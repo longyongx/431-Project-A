@@ -262,7 +262,7 @@ ggplot(data = life_college, aes(x = some_college, y = life_expectancy)) +
         y = 'Average life expectancy (years)')
 ```
 
-In the above plot, a somewhat strong, positive association is observed between `some_college` and `life_expectancy`. Majority of the data points appear to cluster around 40-80% of adults having some form of post-secondary education. Counties where percentage of adults with some form of post-secondary education is around 20% or 90% appear to be outliers in the data set.
+In the above plot, a moderately strong, positive association is observed between `some_college` and `life_expectancy`. Majority of the data points appear to cluster around 40-80% of adults having some form of post-secondary education. Counties where percentage of adults with some form of post-secondary education is around 20% or 90% appear to be outliers in the data set.
 
 
 ## Transfomation Assessment
@@ -324,7 +324,7 @@ ggplot(data = m1, aes(x = .fitted, y = .resid)) +
     labs(title = 'Residuals vs. Fitted Values')
 ```
 
-The residuals versus fitted values plot shows a majority of the actual values have residual absolute values around or less than 3. Several points have residual absolute values greater at 5 or higher.
+The residuals versus fitted values plot shows a majority of the actual values have residual absolute values around or less than 3. Several points have residual absolute values at around 5 or higher.
 
 ```{r plotting_residuals}
 p1 <- ggplot(data = m1, aes(sample = .resid)) +
@@ -343,7 +343,7 @@ p2 <- ggplot(data = m1, aes(x = .resid)) +
 
 p3 <- ggplot(data = m1, aes(x ='', y = .resid)) +
     geom_violin() +
-    geom_boxplot() +
+    geom_boxplot(outlier.color = 'blue') +
     coord_flip() +
     labs(title = 'Boxplot of Residuals')
 
@@ -394,7 +394,7 @@ Cuyahoga County, Ohio has a life expectancy of `r round(cuyahoga$life_expectancy
 
 The research question for this analysis is as follows:
 
-Are progressively higher-income categories associated with progressively higher life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania?
+What is the effect of progressively higher-income categories on life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania?
 
 ## Visualizing the Data
 
@@ -465,7 +465,8 @@ The primary concern for this analysis is a relative lack of normality in the lif
 ```{r}
 life_uninsured <- chr_2020 %>%
     select(state, county, life_expectancy, uninsured_adults) %>%
-    filter(complete.cases(life_expectancy, uninsured_adults))
+    filter(complete.cases(life_expectancy, uninsured_adults)) %>%
+    mutate(state = fct_relevel(state, 'OH', 'IN', 'MI', 'PA'))
 
 life_uninsured
 ```
@@ -478,9 +479,23 @@ life_uninsured
 
 ## Research Question
 
+The research question for this analysis is as follows:
 
+How well does percentage of uninsured adults predict average life expectancy in the 330 counties of Indiana, Michigan, Ohio, and Pennsylvania after accounting for differences between states?
 
 ## Visualising the Data
+
+```{r}
+ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+    geom_smooth(method = 'loess', formula = y ~ x, color = 'red', se = FALSE) +
+    labs(title = 'Average Life Expectancy vs % of Uninsured Adults Across Rust Belt States',
+        x = '% of uninsured adults',
+        y = 'Average life expectancy (years)')
+```
+
+In the above plot, a negative association is observed between `uninsured_adults` and `life_expectancy` across all 330 counties. Majority of the data points appear to cluster around 5 to 10% of uninsured adults. There are two very distinguishable outliers in the data set, at around 25% of uninsured adults.
 
 ```{r}
 ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
@@ -492,20 +507,35 @@ ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
         y = 'Average life expectancy (years)') +
     facet_wrap(~state)
 ```
-
+When taking into account differences between states, it is observed that Ohio, Indiana, and Michigan still keep a negative association between `uninsured_adults` and `life_expectancy`. The negative association appears to hold stronger in Ohio and Michigan, than in Indiana. Pennsylvania however, changes to a positive association, albeit weakly. The aforementioned outliers at around 25% of insured adults are located within Ohio and Indiana.
 
 ## The Fitted Model
 
 ```{r}
-life_uninsured <- life_uninsured %>%
-    mutate(state = fct_relevel(state, 'OH', 'IN', 'MI', 'PA'))
-
 lm.life_uninsured <- lm(life_expectancy ~ uninsured_adults + state, data = life_uninsured)
 
 tidy(lm.life_uninsured, conf.int = TRUE, conf.level = 0.90) %>% kable(digits = 2)
 
 glance(lm.life_uninsured) %>% select(r.squared, sigma, nobs) %>% kable
 ```
+
+The prediction equation is as follows:
+
+Predicted Life Expectancy = 77.57 - 0.09(% Uninsured Adults) + 0.36(IN) + 1.24(MI) + 1.28(PA)
+
+This equation indicates that the predicted life expectancy for a county with no uninsured adults in Ohio would be 77.57 years.
+
+A county with 1% of the adult population uninsured would be expected to have its life expectancy lowered by 0.09 years relative to the a county with the same characteristics but no uninsured adults, and each percentage point of uninsured adults is modeled to have the same impact due to the linear nature of the regression.
+
+A county in Indiana is predicted to have a life expectancy 0.36 years higher than one in Ohio with the same percentage of uninsured adults. Similarly, Michigan and Pennsylvania are predicted to have life expectancies 1.24 years and 1.28 years higher than Ohio, respectively.
+
+Notably, the 90% confidence interval for the Indiana coefficient includes 0, so a difference in life expectancy between counties in Indiana and Ohio cannot be distinguished at that confidence level.
+
+The R-squared for this model is 0.12. This means that 12% of the variance in life expectancy between counties can be predicted based on the percentage of uninsured adults in the county and the state where the county is located.
+
+The standard error of the residuals is 1.76.
+
+A total of 330 observations were used to fit this model.
 
 
 ## Residual Analysis
@@ -518,7 +548,7 @@ ggplot(data = m3, aes(x = .fitted, y = .resid)) +
     geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
     labs(title = 'Residuals vs. Fitted Values')
 ```
-
+The residuals versus fitted values plot shows two clusters of fitted values: one around 77 years of age and one around 78 years of age. Majority of actual values have residual absolute values around or less than 3. Several points have residual absolute values at around 4.5 or higher.
 
 ```{r}
 q1 <- ggplot(data = m3, aes(sample = .resid)) +
@@ -537,7 +567,7 @@ q2 <- ggplot(data = m3, aes(x = .resid)) +
 
 q3 <- ggplot(data = m3, aes(x ='', y = .resid)) +
     geom_violin() +
-    geom_boxplot() +
+    geom_boxplot(outlier.color = 'blue') +
     coord_flip() +
     labs(title = 'Boxplot of Residuals')
 
@@ -546,10 +576,13 @@ q1 + (q2 / q3 + plot_layout(heights = c(4,1)))
 mosaic::favstats(~ .resid, data = m3) %>% kable(digits = 1)
 ```
 
-
+The QQ plot shows a mostly normal distribution with linearity holding well. A fair number of outliers however are identified from both the right side of the QQ plot and boxplot of residuals. A small number of outliers are also identified from the left side of the QQ plot and the boxplot as well. The histogram also shows that the distribution of residuals approximate normality, with most points clustering towards the center of the distribution. The mean value of the residuals is equal to 0, while the median is equal to -0.1. This indicates possible positive skew in the data, but is not observe from the QQ plot.
 
 ## Conclusion and Limitations
 
+
+
+One key limitation of this model is the presence of outlier observations in Ohio and Indiana. Lagrange County in Indiana and Holmes County in Ohio both have uninsured percentages over 20 with higher-than-expected life expectancies. These outliers skew the analysis by decreasing the magnitude of the coefficient for uninsured adults, and excluding these observations would have a disproportionately large effect on the model. Another limitation of this model is that it does not account for different potential effects of the percentage of uninsured adults by state. Notably, the counties in Pennsylvania display a positive relationship between life expectancy and percent uninsured rather than a negative one, and this difference is not apparent in the model. Finally, the model only includes information collected at the county level and thus cannot be applied to individuals or give any information about the effect of insurance status at an individual level.
 
 # Session Information
 
