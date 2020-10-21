@@ -458,6 +458,98 @@ The goal of this analysis was to determine whether progressively higher-income c
 
 The primary concern for this analysis is a relative lack of normality in the life expectancies and therefore the residuals for the counties in the lowest and highest income categories. This suggests that these categories may be better represented through further subdivision. Alternatively, quantitative values for median household income could be used in the analysis rather than categories. Furthermore, this analysis applies only to the county level and the conclusions drawn cannot be applied to individual households either in the states of interest or elsewhere.
 
+# Analysis 3
+
+## The Variables
+
+```{r}
+life_uninsured <- chr_2020 %>%
+    select(state, county, life_expectancy, uninsured_adults) %>%
+    filter(complete.cases(life_expectancy, uninsured_adults))
+
+life_uninsured
+```
+
+- `life_expectancy` is the outcome variable. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
+
+- `uninsured_adults` is the first predictor variable. It is the percentage of people under 54 without health insurance coverage in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania.
+
+- `state` is the second predictor variable. It is a categorical variable consisting of the four states Indiana, Michigan, Ohio, and Pennsylvania.
+
+## Research Question
+
+
+
+## Visualising the Data
+
+```{r}
+ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+    geom_smooth(method = 'loess', formula = y ~ x, color = 'red', se = FALSE) +
+    labs(title = 'Average Life Expectancy vs % of Uninsured Adults Across Rust Belt States',
+        x = '% of uninsured adults',
+        y = 'Average life expectancy (years)') +
+    facet_wrap(~state)
+```
+
+
+## The Fitted Model
+
+```{r}
+life_uninsured <- life_uninsured %>%
+    mutate(state = fct_relevel(state, 'OH', 'IN', 'MI', 'PA'))
+
+lm.life_uninsured <- lm(life_expectancy ~ uninsured_adults + state, data = life_uninsured)
+
+tidy(lm.life_uninsured, conf.int = TRUE, conf.level = 0.90) %>% kable(digits = 2)
+
+glance(lm.life_uninsured) %>% select(r.squared, sigma, nobs) %>% kable
+```
+
+
+## Residual Analysis
+
+```{r}
+m3 <- augment(lm.life_uninsured, data = life_uninsured)
+
+ggplot(data = m3, aes(x = .fitted, y = .resid)) +
+    geom_point() +
+    geom_smooth(method = 'lm', formula = y ~ x, se = FALSE) +
+    labs(title = 'Residuals vs. Fitted Values')
+```
+
+
+```{r}
+q1 <- ggplot(data = m3, aes(sample = .resid)) +
+    geom_qq() +
+    geom_qq_line() + 
+    labs(title = 'QQ Plot of Residuals')
+
+q2 <- ggplot(data = m3, aes(x = .resid)) +
+    geom_histogram(aes(y = stat(density)), bins = 20) +
+    stat_function(fun = dnorm,
+                  args = list(mean = mean(m1$.resid),
+                  sd = sd(m1$.resid)),
+                  col = "black",
+                  lwd = 1.5) +
+    labs(title = "Hist + Normal Density: Residuals")
+
+q3 <- ggplot(data = m3, aes(x ='', y = .resid)) +
+    geom_violin() +
+    geom_boxplot() +
+    coord_flip() +
+    labs(title = 'Boxplot of Residuals')
+
+q1 + (q2 / q3 + plot_layout(heights = c(4,1)))
+
+mosaic::favstats(~ .resid, data = m3) %>% kable(digits = 1)
+```
+
+
+
+## Conclusion and Limitations
+
 
 # Session Information
 
