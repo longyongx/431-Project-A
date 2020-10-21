@@ -34,7 +34,7 @@ library(tidyverse)
 ## Data Ingest
 
 ```{r read_in_data_here, message = FALSE}
-chr_2020_raw <- read_csv("chr_2020_raw.csv", guess_max = 3200)
+chr_2020_raw <- read_csv("analytic_data2020_raw.csv", guess_max = 3200)
 ```
 
 # Data Development
@@ -507,6 +507,23 @@ tidy(lm.life_uninsured, conf.int = TRUE, conf.level = 0.90) %>% kable(digits = 2
 glance(lm.life_uninsured) %>% select(r.squared, sigma, nobs) %>% kable
 ```
 
+The prediction equation is as follows:
+
+Predicted Life Expectancy = 77.57 - 0.09(% Uninsured Adults) + 0.36(IN) + 1.24(MI) + 1.28(PA)
+
+This equation indicates that the predicted life expectancy for a county with no uninsured adults in Ohio would be 77.57 years.
+
+A county with 1% of the adult population uninsured would be expected to have its life expectancy lowered by 0.09 years relative to the a county with the same characteristics but no uninsured adults, and each percentage point of uninsured adults is modeled to have the same impact due to the linear nature of the regression.
+
+A county in Indiana is predicted to have a life expectancy 0.36 years higher than one in Ohio with the same percentage of uninsured adults. Similarly, Michigan and Pennsylvania are predicted to have life expectancies 1.24 years and 1.28 years higher than Ohio, respectively.
+
+Notably, the 90% confidence interval for the Indiana coefficient includes 0, so a difference in life expectancy between counties in Indiana and Ohio cannot be distinguished at that confidence level.
+
+The R-squared for this model is 0.12. This means that 12% of the variance in life expectancy between counties can be predicted based on the percentage of uninsured adults in the county and the state where the county is located.
+
+The standard error of the residuals is 1.76.
+
+A total of 330 observations were used to fit this model.
 
 ## Residual Analysis
 
@@ -550,6 +567,7 @@ mosaic::favstats(~ .resid, data = m3) %>% kable(digits = 1)
 
 ## Conclusion and Limitations
 
+One key limitation of this model is the presence of outlier observations in Ohio and Indiana. Lagrange County in Indiana and Holmes County in Ohio both have uninsured percentages over 20 with higher-than-expected life expectancies. These outliers skew the analysis by decreasing the magnitude of the coefficient for uninsured adults, and excluding these observations would have a disproportionately large effect on the model. Another limitation of this model is that it does not account for different potential effects of the percentage of uninsured adults by state. Notably, the counties in Pennsylvania display a positive relationship between life expectancy and percent uninsured rather than a negative one, and this difference is not apparent in the model. Finally, the model only includes information collected at the county level and thus cannot be applied to individuals or give any information about the effect of insurance status at an individual level.
 
 # Session Information
 
