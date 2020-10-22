@@ -6,6 +6,7 @@ output:
   rmdformats::readthedown:
     highlight: kate
     number_sections: TRUE
+    code_folding: show
 ---
 
 # Setup and R Packages
@@ -35,7 +36,9 @@ theme_set(theme_bw())
 ## Data Ingest
 
 ```{r read_in_data_here, message = FALSE}
-chr_2020_raw <- read_csv("chr_2020_raw.csv", guess_max = 3200)
+data_url <- "https://www.countyhealthrankings.org/sites/default/files/media/document/analytic_data2020_0.csv"
+
+chr_2020_raw <- read_csv(data_url, skip = 1, guess_max = 3200)
 ```
 
 # Data Development
@@ -241,7 +244,6 @@ life_college <- chr_2020 %>%
 life_college
 ```
 
-
 - `life_expectancy` is the outcome variable. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
 
 - `some_college` is the predictor variable. It describes the percentage of adults ages 25-44 with some form of post-secondary education in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. This value includes, but is not limited to, vocational schools, junior colleges, and four-year colleges. This measure counts those who pursued post-secondary education, but did not receive a degree in addition to those who attained degrees. 
@@ -317,14 +319,13 @@ The linear model prediction equation is as follows:
 
 - The intercept (72.87) is the predicted `life_expectancy` for counties where `some_college` is 0%. There is 90% confidence that the true intercept is between 71.93 to 73.81 years of age.
 
-- The slope (0.08) of `some_college` is the predicted change in `life_expectancy` associated with a 1% increase in number of adults with some form of some form of post-secondary education. There is 90% confidence that the true slope is between 0.06 to 0.09.
+- The slope (0.08) of `some_college` is the predicted change in `life_expectancy` associated with a 1% increase in the number of adults with some form of post-secondary education. There is 90% confidence that the true slope is between 0.06 to 0.09.
 
 - The Pearson correlation coefficient of the linear model is approximately 0.41. This gives an R-squared value of 0.17, which means that about 17% of the variance is explained by the linear model.
 
 - Sigma, or the residual standard error, is approximately 1.70.
 
 - 330 total observations were used to fit the linear model.
-
 
 ## Residual Analysis
 
@@ -410,7 +411,7 @@ life_income
 
 - `life_expectancy` is the outcome variable. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
 
-- `median_household_income` is the predictor variable. It describes the income where half of the households in a county earn more and the other half earn less in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. This value includes incomes from wages, salaries, self-employment, interest, dividends, rentals, royalties, estates, trusts, Social Security, Railroad Retirement, Supplemental Security Income, public assistance, welfare, and pensions. It does not include capital gains, non-business sale of property, food stamps, subsidies for public housing or medical care, withdrawal of bank deposits, money borrowed, tax refunds, gifts, lump-sum inheritances, or insurance payments. `income_cat` divides `median_household_income` into 4 categories - median household income less than 45k, from 45k to 55k, from 55k to 65k, and 65k and above. Each category includes its lower bound, but not upper bound.
+- `median_household_income` is the predictor variable. It describes the income where half of the households in a county earn more and the other half earn less in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. This value includes incomes from wages, salaries, self-employment, interest, dividends, rentals, royalties, estates, trusts, Social Security, Railroad Retirement, Supplemental Security Income, public assistance, welfare, and pensions. It does not include capital gains, non-business sale of property, food stamps, subsidies for public housing or medical care, withdrawal of bank deposits, money borrowed, tax refunds, gifts, lump-sum inheritances, or insurance payments. `income_cat` divides `median_household_income` into 4 categories - median household income less than 45k, from 45k to 55k, from 55k to 65k, and 65k and above. Each category includes its lower bound, but not its upper bound. For the purposes of building the model, the lowest income category is considered the baseline category.
 
 ```{r}
 life_income %>%
@@ -431,7 +432,8 @@ What differences in life expectancy are observed between progressively higher-in
 ggplot(data = life_income, mapping = aes(x = income_cat, y = life_expectancy)) +
   geom_violin(aes(fill = income_cat), show.legend = FALSE) + 
   geom_boxplot(show.legend = FALSE) + 
-  labs(title="Life Expectancy is Higher for Higher Income Categories", y="Life Expectancy in Years", x="Income Category")
+  labs(title="Life Expectancy is Higher for Higher Income Categories", y="Life Expectancy in Years",
+       x="Income Category")
 ```
 
 This plot shows that each progressively higher income category has a higher average life expectancy, with an increase in the median life expectancy of more than a year for each each category relative to the one below it. The interquartile ranges remain relatively consistent for each category, particularly for the three highest categories. There are a few outlier counties in the middle two categories which have higher-than-expected life expectancies. Most notably, the county with the highest life expectancy is not in the highest income category.
@@ -501,7 +503,7 @@ The two counties where the model was least successful in predicting life expecta
 
 ## Conclusions and Limitations
 
-The goal of this analysis was to determine whether progressively higher-income categories were associated with progressively higher life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania. The results of the analysis indicate that higher-income categories are indeed associated with correspondingly higher life expectancies. Each income category exhibited a mean and median life expectancy at least 1 year greater than the corresponding values for the income category directly below it. Specifically, the mean life expectancy for counties with a median annual household income of less than \$45,000 was 75.82. The mean life expectancy for counties with a median annual household income of \$45,000 to \$55,000 was `r 75.82+1.09`. The mean life expectancy for counties with a median annual household income of \$55,000 to \$65,000 was `r 75.82+2.28`. Finally, the mean life expectancy for counties with a median annual household income of \$65,000 or greater was `r 75.82+3.69`. The 90% confidence intervals do not overlap with 0 or with each other.
+The goal of this analysis was to determine whether progressively higher-income categories were associated with progressively higher life expectancy in the `r nrow(chr_2020)` counties of Indiana, Michigan, Ohio, and Pennsylvania. The results of the analysis indicate that higher-income categories are indeed associated with correspondingly higher life expectancies. Each income category exhibited a mean and median life expectancy at least 1 year greater than the corresponding values for the income category directly below it. Specifically, the mean life expectancy for counties with a median annual household income of less than \$45,000 was 75.82. The mean life expectancy for counties with a median annual household income of \$45,000 to \$55,000 was `r 75.82+1.09`. The mean life expectancy for counties with a median annual household income of \$55,000 to \$65,000 was `r 75.82+2.28`. Finally, the mean life expectancy for counties with a median annual household income of \$65,000 or greater was `r 75.82+3.69`. The 90% confidence intervals for the coefficients in the model do not overlap with 0 or with each other, indicating that each income category exhibits distinctly different life expectancy at a 90% confidence level.
 
 The primary concern for this analysis is a relative lack of normality in the life expectancies and therefore the residuals for the counties in the lowest and highest income categories. This suggests that these categories may be better represented through further subdivision. Alternatively, quantitative values for median household income could be used in the analysis rather than categories. Furthermore, this analysis applies only to the county level and the conclusions drawn cannot be applied to individual households either in the states of interest or elsewhere.
 
@@ -514,8 +516,6 @@ life_uninsured <- chr_2020 %>%
     select(state, county, life_expectancy, uninsured_adults) %>%
     filter(complete.cases(life_expectancy, uninsured_adults)) %>%
     mutate(state = fct_relevel(state, 'OH', 'IN', 'MI', 'PA'))
-
-life_uninsured
 ```
 
 - `life_expectancy` is the outcome variable. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
@@ -542,7 +542,7 @@ ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
         y = 'Average life expectancy (years)')
 ```
 
-In the above plot, a negative association is observed between `uninsured_adults` and `life_expectancy` across all 330 counties. Majority of the data points appear to cluster around 5 to 10% of uninsured adults. There are two very distinguishable outliers in the data set, at around 25% of uninsured adults.
+In the above plot, a negative association is observed between `uninsured_adults` and `life_expectancy` across all 330 counties. The majority of the data points appear to cluster around 5 to 10% uninsured adults. There are two very distinguishable outliers in the data set, at around 25% uninsured adults.
 
 ```{r}
 ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
@@ -552,10 +552,10 @@ ggplot(data = life_uninsured, aes(x = uninsured_adults, y = life_expectancy)) +
     labs(title = 'Average Life Expectancy vs % of Uninsured Adults Across Rust Belt States',
         x = '% of uninsured adults',
         y = 'Average life expectancy (years)') +
-    facet_wrap(~state)
+    facet_wrap( ~ state)
 ```
 
-When taking into account differences between states, it is observed that Ohio, Indiana, and Michigan still keep a negative association between `uninsured_adults` and `life_expectancy`. The negative association appears to hold stronger in Ohio and Michigan, than in Indiana. Pennsylvania however, changes to a positive association, albeit weakly. The aforementioned outliers at around 25% of insured adults are located within Ohio and Indiana.
+When taking into account differences between states, it is observed that Ohio, Indiana, and Michigan still keep a negative association between `uninsured_adults` and `life_expectancy`. The negative association appears to hold stronger in Ohio and Michigan than in Indiana. Pennsylvania, however, changes to a positive association, albeit weakly. The aforementioned outliers at around 25% of insured adults are located within Ohio and Indiana.
 
 ## The Fitted Model
 
@@ -584,7 +584,6 @@ The prediction equation is as follows:
 
 - A total of 330 observations were used to fit this model.
 
-
 ## Residual Analysis
 
 ```{r}
@@ -598,7 +597,7 @@ ggplot(data = m3, aes(x = .fitted, y = .resid)) +
          y = 'Residuals')
 ```
 
-The residuals versus fitted values plot shows two clusters of fitted values: one around 77 years of age and one around 78 years of age. Majority of actual values have residual absolute values around or less than 3. Several points have residual absolute values at around 4.5 or higher.
+The residuals versus fitted values plot shows two clusters of fitted values: one around 77 years of age and one around 78 years of age. The majority of actual values have residual absolute values around or less than 3. Several points have residual absolute values at around 4.5 or higher.
 
 ```{r}
 q1 <- ggplot(data = m3, aes(sample = .resid)) +
@@ -632,7 +631,7 @@ q1 + (q2 / q3 + plot_layout(heights = c(4,1)))
 mosaic::favstats(~ .resid, data = m3) %>% kable(digits = 1)
 ```
 
-The QQ plot shows a mostly normal distribution with linearity holding well. A fair number of outliers however are identified from both the right side of the QQ plot and boxplot of residuals. A small number of outliers are also identified from the left side of the QQ plot and the boxplot. The histogram shows that the distribution of residuals approximate normality, with most points clustering towards the center of the distribution. The mean value of the residuals is equal to 0, while the median is equal to -0.1. This indicates possible positive skew in the data, but is not observed from the QQ plot.
+The QQ plot shows a mostly normal distribution with linearity holding well. A fair number of outliers however are identified from both the right side of the QQ plot and boxplot of residuals. A small number of outliers are also identified from the left side of the QQ plot and the boxplot. The histogram shows that the distribution of residuals approximate normality, with most points clustering towards the center of the distribution. The mean value of the residuals is equal to 0, while the median is equal to -0.1. This indicates possible positive skew in the data, but this is not observed in the QQ plot.
 
 ```{r m3_cuyahoga}
 m3 %>%
