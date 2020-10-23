@@ -516,6 +516,8 @@ life_uninsured <- chr_2020 %>%
     select(state, county, life_expectancy, uninsured_adults) %>%
     filter(complete.cases(life_expectancy, uninsured_adults)) %>%
     mutate(state = fct_relevel(state, 'OH', 'IN', 'MI', 'PA'))
+
+life_uninsured
 ```
 
 - `life_expectancy` is the outcome variable. It is the average number of years a person can expect to live, based on age-specific death rates in 330 counties across Indiana, Michigan, Ohio, and Pennsylvania. 
